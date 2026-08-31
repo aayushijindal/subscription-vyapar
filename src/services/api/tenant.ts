@@ -1,5 +1,5 @@
 import { apiClient } from "./axios";
-import { BaseResponse, Tenant } from "./types";
+import type { BaseResponse, Tenant } from "./types";
 
 export const tenantApi = {
   getTenantDetails: async () => {

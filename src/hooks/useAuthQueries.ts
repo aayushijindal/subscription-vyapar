@@ -2,8 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast"; // Assuming react-hot-toast or we can adjust later, Wait, checking package.json there is no react-hot-toast. They have their own ToastContainer. I'll just use a generic toast or the one they have. 
-// WAIT, I shouldn't guess the toast. Let me just return the mutation and let the component handle it.
 
 export const useLogin = () => {
   const { login } = useAuth();

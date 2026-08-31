@@ -1,5 +1,5 @@
 import { apiClient } from "./axios";
-import { BaseResponse, PaginatedData, User } from "./types";
+import type { BaseResponse, PaginatedData, User } from "./types";
 
 export const usersApi = {
   listUsers: async (page: number = 1, pageSize: number = 25) => {

@@ -1,5 +1,5 @@
 import { apiClient } from "./axios";
-import { BaseResponse, AuthData, TokenRefreshData, User } from "./types";
+import type { BaseResponse, AuthData } from "./types";
 
 export const authApi = {
   register: async (data: Record<string, any>) => {
