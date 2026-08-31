@@ -1,0 +1,20 @@
+import React from 'react';
+import { Card } from '@/components/ui/Card';
+
+export const About: React.FC = () => {
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-20 space-y-12 text-left">
+      <h1 className="text-4xl font-bold text-slate-900 text-center">About VyaparERP</h1>
+      <p className="text-lg text-slate-600 leading-relaxed text-center max-w-2xl mx-auto">
+        We build premium accounting and subscription management software designed to run growing Indian enterprises with transparency and efficiency.
+      </p>
+
+      <Card className="space-y-6">
+        <h2 className="text-2xl font-bold text-slate-900">Our Mission</h2>
+        <p className="text-slate-600 leading-relaxed text-sm">
+          VyaparERP was built to bridge the gap between traditional offline bookkeeping tools and high-scale SaaS products. By providing secure, GST-compliant interfaces accessible on mobile and web browsers, we enable retail shop operators and wholesale traders to digitize and manage billing smoothly.
+        </p>
+      </Card>
+    </div>
+  );
+};
