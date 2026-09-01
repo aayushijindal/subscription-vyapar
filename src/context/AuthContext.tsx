@@ -1,21 +1,8 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { ReactNode } from "react";
-import type { User, Tenant, AuthData } from "../services/api/types";
-import { authApi } from "../services/api/auth";
-
-interface AuthContextType {
-  user: User | null;
-  tenant: Tenant | null;
-  accessToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (data: AuthData) => void;
-  logout: () => void;
-  refreshUser: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+import type { User, Tenant, AuthData } from "@/services/api/types";
+import { authApi } from "@/services/api/auth";
+import { AuthContext } from "@/context/authHelpers";
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [tenant, setTenant] = useState<Tenant | null>(null);
@@ -62,8 +49,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [logout]);
 
   useEffect(() => {
-    refreshUser();
-    
+    // Run refreshUser in a microtask to avoid synchronously calling setState inside effect
+    Promise.resolve().then(() => refreshUser());
+
     const handleAuthExpired = () => {
       logout();
     };
@@ -92,10 +80,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};

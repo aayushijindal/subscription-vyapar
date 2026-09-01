@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export const Terms: React.FC = () => {
   return (
@@ -7,8 +7,10 @@ export const Terms: React.FC = () => {
       <p className="text-slate-500 text-sm">Last updated: July 13, 2026</p>
       <hr className="border-slate-100" />
       <p className="text-slate-600 text-sm leading-relaxed">
-        By accessing or using VyaparERP's services, you agree to comply with and be bound by these terms. We license access on a subscription basis matching the plans page configuration...
+        By accessing or using First Computer ERP's services, you agree to comply with and be bound by these terms. Access is provided for managing your business operations through the ERP workspace.
       </p>
     </div>
   );
 };
+
+

@@ -1,89 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Menu, Bell, LogOut, Settings, Search } from 'lucide-react';
-import { showToast } from '@/hooks/useToasts';
-
-interface TopbarProps {
-  onMenuClick: () => void;
-}
-
-export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    showToast('success', 'Logged out successfully');
-    navigate('/login');
-  };
-
-  return (
-    <header className="h-16 border-b border-slate-200 bg-white sticky top-0 z-20 flex items-center justify-between px-6">
-      <div className="flex items-center gap-4">
-        {/* Toggle Menu Button for mobile screens */}
-        <button 
-          onClick={onMenuClick}
-          className="lg:hidden p-2 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-50 cursor-pointer"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-
-        {/* Search */}
-        <div className="relative hidden sm:block w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search transactions, sales..."
-            className="w-full pl-9 pr-4 py-1.5 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
-        {/* Alerts Button */}
-        <button className="p-2 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-50 relative cursor-pointer">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-blue-600 rounded-full" />
-        </button>
-
-        {/* User profile Menu dropdown */}
-        <div className="relative">
-          <button 
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 cursor-pointer focus:outline-none"
-          >
-            <div className="h-9 w-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-inner">
-              VS
-            </div>
-          </button>
-
-          {dropdownOpen && (
-            <>
-              <div 
-                onClick={() => setDropdownOpen(false)}
-                className="fixed inset-0 z-10"
-              />
-              <div className="absolute right-0 mt-2.5 w-52 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-20">
-                <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-sm font-semibold text-slate-900">Vikas Sharma</p>
-                  <p className="text-xs text-slate-500">vikas@retailer.com</p>
-                </div>
-                <button 
-                  onClick={() => { setDropdownOpen(false); navigate('/dashboard/profile'); }}
-                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
-                >
-                  <Settings className="h-4 w-4" /> Settings
-                </button>
-                <button 
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-slate-100 cursor-pointer"
-                >
-                  <LogOut className="h-4 w-4" /> Logout
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </header>
-  );
+﻿import React, { useState } from 'react';
+import { Bell, CalendarDays, ChevronDown, Menu, Search } from 'lucide-react';
+import { useAuth } from '@/context/authHelpers';
+import { useLogout } from '@/hooks/useAuthQueries';
+export const Topbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
+  const [menu, setMenu] = useState(false); const { user, tenant } = useAuth(); const logout = useLogout();
+  const label = user ? `${user.first_name} ${user.last_name}`.trim() || user.email : '';
+  const initials = label.split(/\s+/).filter(Boolean).map(part => part[0]).join('').slice(0, 2).toUpperCase();
+  return <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#e3eaf1] bg-white/90 px-5 backdrop-blur md:px-8"><div className="flex items-center gap-4"><button onClick={onMenuClick} className="rounded-lg p-2 text-[#48647f] lg:hidden"><Menu className="h-5 w-5" /></button><div className="relative hidden w-72 md:block"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#91a2b6]" /><input className="w-full rounded-xl border border-[#e0e8f0] bg-[#f8fafc] py-2 pl-9 pr-3 text-xs outline-none transition focus:border-[#6389b5]" placeholder="Search will be available with ERP data APIs" disabled /></div></div><div className="flex items-center gap-3 md:gap-5"><div className="hidden items-center gap-2 text-xs font-medium text-[#69809a] sm:flex"><CalendarDays className="h-4 w-4" /> {tenant?.business_name}</div><button className="relative rounded-lg p-2 text-[#526e8c] hover:bg-[#f4f7fb]"><Bell className="h-5 w-5" /></button><div className="relative"><button onClick={() => setMenu(!menu)} className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-[#f4f7fb]"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#dbe7f4] text-xs font-bold text-[#214a78]">{initials}</span><span className="hidden text-left sm:block"><b className="block max-w-32 truncate text-xs text-[#213b5a]">{label}</b><small className="block text-[10px] text-[#8193a8]">{user?.role}</small></span><ChevronDown className="h-3.5 w-3.5 text-[#8093a9]" /></button>{menu && <div className="absolute right-0 mt-2 w-44 rounded-xl border border-[#e1e8f0] bg-white p-1.5 shadow-xl"><button onClick={() => logout.mutate()} className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-[#435e7a] hover:bg-slate-50">Sign out</button></div>}</div></div></header>;
 };

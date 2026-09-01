@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export const Privacy: React.FC = () => {
   return (
@@ -7,8 +7,9 @@ export const Privacy: React.FC = () => {
       <p className="text-slate-500 text-sm">Last updated: July 13, 2026</p>
       <hr className="border-slate-100" />
       <p className="text-slate-600 text-sm leading-relaxed">
-        We respect your privacy and protect personal data. Financial transaction statements uploaded to VyaparERP are encrypted end-to-end...
+        We respect your privacy and protect personal data. Financial transaction statements uploaded to First Computer ERP are encrypted end-to-end...
       </p>
     </div>
   );
 };
+

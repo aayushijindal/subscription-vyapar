@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -21,9 +21,8 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { label: 'Features', href: '/#features' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' }
+    { label: 'How it works', href: '/#features' },
+    { label: 'Contact', href: 'mailto:sanjay_zindal@rediffmail.com' }
   ];
 
   return (
@@ -40,7 +39,7 @@ export const Navbar: React.FC = () => {
           <div className="bg-blue-600 text-white p-2 rounded-xl">
             <ShieldCheck className="h-6 w-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">VyaparERP</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900">First Computer ERP</span>
         </Link>
 
         {/* Desktop nav */}
@@ -109,3 +108,5 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
+
+

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export const AuthLayout: React.FC = () => {
             <div className="bg-blue-600 text-white p-2 rounded-xl">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">VyaparERP</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">First Computer ERP</span>
           </div>
 
           <Outlet />
@@ -27,15 +27,15 @@ export const AuthLayout: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-400 rounded-full filter blur-3xl opacity-20 -ml-40 -mb-40" />
 
         <div className="relative z-10">
-          <span className="text-sm font-semibold tracking-wider uppercase text-blue-200">Vyapar SaaS ERP Enterprise</span>
+          <span className="text-sm font-semibold tracking-wider uppercase text-blue-200">First Computer ERP</span>
           <h2 className="text-4xl font-bold leading-tight mt-6 max-w-lg">
-            Simplify subscription billing, GST filing, & accounts monitoring.
+            Keep accounting, inventory, sales and purchases moving together.
           </h2>
         </div>
 
         <div className="relative z-10 space-y-4">
           <blockquote className="text-lg text-blue-100 italic">
-            "Switching to VyaparERP helped our retail business consolidate GST filings and automate customer invoices in minutes."
+            "Switching to First Computer ERP helped our retail business consolidate GST filings and automate customer invoices in minutes."
           </blockquote>
           <div>
             <p className="font-semibold">Amit Sharma</p>
@@ -46,3 +46,5 @@ export const AuthLayout: React.FC = () => {
     </div>
   );
 };
+
+

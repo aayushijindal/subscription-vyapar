@@ -1,53 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { showToast } from '@/hooks/useToasts';
-
-const forgotSchema = zod.object({
-  email: zod.string().email('Please enter a valid email address')
-});
-
-type ForgotFormInputs = zod.infer<typeof forgotSchema>;
-
-export const ForgotPassword: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ForgotFormInputs>({
-    resolver: zodResolver(forgotSchema)
-  });
-
-  const onSubmit = (data: ForgotFormInputs) => {
-    console.log(data);
-    showToast('success', 'Reset email dispatched!', 'Please check your spam or inbox folders.');
-  };
-
-  return (
-    <div className="space-y-6 text-left">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-slate-900">Reset password</h1>
-        <p className="text-sm text-slate-500">Provide the email registered with your company account.</p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-700">Email Address</label>
-          <input 
-            type="email" 
-            {...register('email')}
-            className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          />
-          {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
-        </div>
-
-        <Button type="submit" className="w-full py-3 justify-center">Send Instructions</Button>
-      </form>
-
-      <div className="text-center">
-        <p className="text-sm text-slate-500">
-          Remember credentials? <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">Log In</Link>
-        </p>
-      </div>
-    </div>
-  );
-};
+import { authApi } from '@/services/api';
+const schema = zod.object({ email: zod.string().email('Please enter a valid email address') });
+type Inputs = zod.infer<typeof schema>;
+export const ForgotPassword: React.FC = () => { const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({ resolver: zodResolver(schema) }); const [loading, setLoading] = React.useState(false); const onSubmit = async ({ email }: Inputs) => { setLoading(true); try { const result = await authApi.forgotPassword(email); showToast(result.success ? 'success' : 'error', result.message); } catch (error: any) { showToast('error', 'Unable to send reset link', error?.response?.data?.message || 'Please try again.'); } finally { setLoading(false); } }; return <div className="space-y-6 text-left"><div><h1 className="text-2xl font-bold text-slate-900">Reset password</h1><p className="mt-2 text-sm text-slate-500">Enter the email registered with your company account.</p></div><form onSubmit={handleSubmit(onSubmit)} className="space-y-4"><div className="space-y-1.5"><label className="text-xs font-semibold text-slate-700">Email Address</label><input type="email" {...register('email')} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20" />{errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}</div><Button type="submit" isLoading={loading} className="w-full justify-center py-3">Send Instructions</Button></form><p className="text-center text-sm text-slate-500">Remember credentials? <Link to="/login" className="font-semibold text-blue-600">Log In</Link></p></div>; };

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export const Refund: React.FC = () => {
   return (
@@ -7,8 +7,10 @@ export const Refund: React.FC = () => {
       <p className="text-slate-500 text-sm">Last updated: July 13, 2026</p>
       <hr className="border-slate-100" />
       <p className="text-slate-600 text-sm leading-relaxed">
-        We offer a 7-day money-back guarantee if you are not fully satisfied with VyaparERP subscription services. Refund claims submitted post 7-days will be evaluated case-by-case...
+        We offer a 7-day money-back guarantee if you are not fully satisfied with First Computer ERP services. Refund claims submitted post 7-days will be evaluated case-by-case...
       </p>
     </div>
   );
 };
+
+
