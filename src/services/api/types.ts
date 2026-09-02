@@ -5,22 +5,23 @@ export interface BaseResponse<T = any> {
 }
 
 export interface User {
-  uuid: string;
+  id: number;
+  uuid?: string;
+  username?: string;
   email: string;
   first_name: string;
   last_name: string;
-  role: "OWNER" | "ADMIN" | "ACCOUNTANT" | "MANAGER" | "STAFF" | "SALES" | "PURCHASE" | "SUPER_ADMIN";
+  role: string;
+  company: number;
+  financial_year: number;
   mobile?: string;
   is_active?: boolean;
-  is_verified?: boolean;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface Tenant {
   uuid: string;
   business_name: string;
-  business_type: "RETAIL" | "WHOLESALE" | "SERVICES" | "MANUFACTURING" | "OTHERS";
+  business_type: string;
   is_active: boolean;
   legal_name?: string;
   gstin?: string;
@@ -43,8 +44,7 @@ export interface AuthData {
   access: string;
   refresh: string;
   user: User;
-  tenant: Tenant;
-  subscription: any | null;
+  tenant?: Tenant;
 }
 
 export interface TokenRefreshData {

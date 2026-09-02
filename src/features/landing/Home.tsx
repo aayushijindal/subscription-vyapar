@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { ArrowRight, BarChart3, Boxes, FileCheck2, Landmark, ReceiptIndianRupee, ShieldCheck } from 'lucide-react';
+﻿import { ArrowRight, BarChart3, Boxes, FileCheck2, Landmark, ReceiptIndianRupee, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 

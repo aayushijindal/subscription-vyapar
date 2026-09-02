@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
 
@@ -6,60 +6,61 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-900 text-slate-400 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="bg-[#0b1727] text-slate-400 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
         {/* Brand */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Link to="/" className="flex items-center gap-2 text-white">
             <div className="bg-blue-600 text-white p-2 rounded-xl">
               <ShieldCheck className="h-6 w-6" />
             </div>
             <span className="text-xl font-bold tracking-tight">First Computer ERP</span>
           </Link>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            A practical ERP system for managing accounts, inventory, purchase, sales and reporting.
+          <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+            A comprehensive, modern ERP system designed to streamline your accounting, inventory, and operations.
           </p>
         </div>
 
-        {/* Company */}
+        {/* Quick Links */}
         <div>
-          <h4 className="text-white font-semibold text-sm mb-4">Company</h4>
-          <ul className="space-y-2.5 text-sm">
-            <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-            </ul>
+          <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Quick Links</h4>
+          <ul className="space-y-3.5 text-sm">
+            <li><Link to="/features" className="hover:text-white transition-colors">Features</Link></li>
+            <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+            <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+            <li><Link to="/login" className="hover:text-white transition-colors">Log In</Link></li>
+            <li><Link to="/register" className="hover:text-white transition-colors">Create Account</Link></li>
+          </ul>
         </div>
 
-        {/* Support & Legal */}
-        {/* Contact */}
+        
+
+        {/* Contact Info */}
         <div className="space-y-4">
-          <h4 className="text-white font-semibold text-sm mb-4">Contact Info</h4>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-blue-500" />
-              <span>sanjay_zindal@rediffmail.com</span>
+          <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Contact Us</h4>
+          <ul className="space-y-4 text-sm">
+            <li className="flex items-start gap-3">
+              <Mail className="h-4.5 w-4.5 text-blue-500 mt-0.5" />
+              <span className="hover:text-white transition-colors cursor-pointer">sanjay_zindal@rediffmail.com</span>
             </li>
-            <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-blue-500" />
-              <span>9426064310</span>
+            <li className="flex items-start gap-3">
+              <Phone className="h-4.5 w-4.5 text-blue-500 mt-0.5" />
+              <span className="hover:text-white transition-colors cursor-pointer">+91 94260 64310</span>
             </li>
-            <li className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-blue-500" />
-              <span>Ahmedabad, Gujarat</span>
+            <li className="flex items-start gap-3">
+              <MapPin className="h-4.5 w-4.5 text-blue-500 mt-0.5" />
+              <span>Ahmedabad, Gujarat<br/>India</span>
             </li>
           </ul>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+      <div className="max-w-7xl mx-auto px-6 py-6 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
         <span>&copy; {currentYear} First Computer ERP Inc. All rights reserved.</span>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-white transition-colors">Twitter</a>
-          <a href="#" className="hover:text-white transition-colors">GitHub</a>
-          <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
+          <span className="flex items-center gap-1">Designed with <span className="text-red-500">♥</span> in India</span>
         </div>
       </div>
     </footer>
   );
 };
-
-

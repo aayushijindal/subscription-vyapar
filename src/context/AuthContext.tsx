@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("refreshToken", authData.refresh);
     setAccessToken(authData.access);
     setUser(authData.user);
-    setTenant(authData.tenant);
+    setTenant(authData.tenant || null);
   }, []);
 
   const logout = useCallback(() => {
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await authApi.getMe();
       if (response.success && response.data) {
         setUser(response.data.user);
-        setTenant(response.data.tenant);
+        setTenant(response.data.tenant || null);
       } else {
         logout();
       }

@@ -1,5 +1,4 @@
-﻿import React from 'react';
-
+﻿
 export const Privacy: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-20 text-left space-y-6">

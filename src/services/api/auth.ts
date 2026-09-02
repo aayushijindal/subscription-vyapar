@@ -9,10 +9,19 @@ export const authApi = {
 
   login: async (credentials: Record<string, string>) => {
     const response = await apiClient.post<BaseResponse<AuthData>>("/auth/login/", credentials);
+    // Since we also need to store company/financial_year for global headers if present
+    if (response.data?.data?.user?.company) {
+      localStorage.setItem('companyId', response.data.data.user.company.toString());
+    }
+    if (response.data?.data?.user?.financial_year) {
+      localStorage.setItem('financialYearId', response.data.data.user.financial_year.toString());
+    }
     return response.data;
   },
 
   logout: async (refreshToken: string) => {
+    localStorage.removeItem('companyId');
+    localStorage.removeItem('financialYearId');
     const response = await apiClient.post<BaseResponse<null>>("/auth/logout/", { refresh: refreshToken });
     return response.data;
   },

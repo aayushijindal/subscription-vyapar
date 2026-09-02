@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -20,9 +20,9 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Features', href: '/#features' },
-    { label: 'How it works', href: '/#features' },
-    { label: 'Contact', href: 'mailto:sanjay_zindal@rediffmail.com' }
+    { label: 'Features', href: '/features' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Contact', href: '/contact' }
   ];
 
   return (
@@ -45,13 +45,13 @@ export const Navbar: React.FC = () => {
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a 
+            <Link 
               key={link.label} 
-              href={link.href}
+              to={link.href}
               className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -80,14 +80,14 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden border-t border-slate-100 bg-white p-6 space-y-4 shadow-lg absolute top-18 left-0 right-0">
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => (
-              <a 
+              <Link 
                 key={link.label} 
-                href={link.href}
+                to={link.href}
                 onClick={() => setIsOpen(false)}
                 className="text-base font-medium text-slate-600 hover:text-blue-600 transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <hr className="border-slate-100" />
             <Link 

@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { Building2, Mail, MapPin, Phone, ShieldCheck, Users } from 'lucide-react';
 import { tenantApi, usersApi } from '@/services/api';
 import { useAuth } from '@/context/authHelpers';

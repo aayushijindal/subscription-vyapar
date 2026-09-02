@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 const BASE_URL = (import.meta.env.VITE_API_URL || 'https://first-computer.onrender.com/api/v1/').replace(/\/?$/, '/');
 export const apiClient = axios.create({ baseURL: BASE_URL, headers: { 'Content-Type': 'application/json' } });
@@ -6,6 +6,13 @@ export const apiClient = axios.create({ baseURL: BASE_URL, headers: { 'Content-T
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  
+  const companyId = localStorage.getItem('companyId');
+  if (companyId) config.headers['x-company-id'] = companyId;
+
+  const financialYearId = localStorage.getItem('financialYearId');
+  if (financialYearId) config.headers['x-financial-year-id'] = financialYearId;
+
   return config;
 });
 

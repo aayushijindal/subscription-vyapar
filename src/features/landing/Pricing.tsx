@@ -1,109 +1,67 @@
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { Check } from 'lucide-react';
-import { showToast } from '@/hooks/useToasts';
+import { Button } from '@/components/ui/Button';
 
 export const Pricing: React.FC = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-
-  const plans = [
-    {
-      name: 'Starter',
-      description: 'Ideal for small retail shops and independent operators.',
-      price: billingCycle === 'monthly' ? 1200 : 999,
-      features: ['Up to 500 invoices / mo', 'Single business warehouse', 'Standard email support', 'GST reports generation']
-    },
-    {
-      name: 'Professional',
-      description: 'Perfect for growing wholesalers and multiple warehouses.',
-      price: billingCycle === 'monthly' ? 2500 : 1999,
-      features: ['Unlimited invoicing', 'Up to 5 warehouses', 'Priority WhatsApp support', 'Automated subscription logs', 'Custom brand themes'],
-      popular: true
-    },
-    {
-      name: 'Enterprise',
-      description: 'Configured for global chains needing custom integrations.',
-      price: billingCycle === 'monthly' ? 6000 : 4999,
-      features: ['Unlimited warehouse sync', 'Dedicated account manager', 'Custom API webhooks', 'SLA guaranteed uptime', 'Advanced audit logs']
-    }
-  ];
-
-  const handleSelectPlan = (planName: string) => {
-    showToast('success', `Selected ${planName} Plan`, 'Successfully initialized checkout process.');
-  };
-
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 space-y-16 text-center">
-      {/* Title */}
-      <div className="space-y-4 max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900">Simple, transparent pricing plans</h1>
-        <p className="text-slate-500">Pick the plan that works best for your billing scale. Switch or cancel at any time.</p>
-      </div>
+    <div className="min-h-screen pt-28 pb-20 bg-[#fafcff] relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#eaf2f9] to-transparent -z-10" />
 
-      {/* Switch billing cycle */}
-      <div className="flex items-center justify-center gap-4">
-        <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-blue-600' : 'text-slate-500'}`}>Monthly Billing</span>
-        <button
-          onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-          className="w-12 h-6.5 bg-slate-200 rounded-full p-1 transition-colors duration-200 focus:outline-none relative"
-        >
-          <div className={`w-4.5 h-4.5 bg-white rounded-full transition-transform duration-200 shadow-md ${
-            billingCycle === 'yearly' ? 'translate-x-5.5 bg-blue-600' : 'translate-x-0'
-          }`} />
-        </button>
-        <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-blue-600' : 'text-slate-500'}`}>
-          Yearly Billing <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1 font-semibold">Save 20%</span>
-        </span>
-      </div>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center max-w-2xl mx-auto mb-16 animate-rise">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#132f50] tracking-tight mb-4">
+            Simple, transparent <span className="text-[#376fa9]">pricing.</span>
+          </h1>
+          <p className="text-lg text-[#688099]">
+            No hidden fees. Choose the plan that best fits your business size and needs.
+          </p>
+        </div>
 
-      {/* Plans Card Deck */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto text-left">
-        {plans.map((plan) => (
-          <Card 
-            key={plan.name}
-            className={`flex flex-col justify-between relative border ${
-              plan.popular ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-200'
-            }`}
-          >
-            {plan.popular && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
-                Most Popular
-              </span>
-            )}
-
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
-                <p className="text-slate-500 text-sm mt-2">{plan.description}</p>
-              </div>
-
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">₹{plan.price}</span>
-                <span className="text-slate-500 text-sm">/ month</span>
-              </div>
-
-              <hr className="border-slate-100" />
-
-              <ul className="space-y-3.5 text-sm text-slate-600">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2.5">
-                    <Check className="h-4.5 w-4.5 text-blue-600 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Starter Plan */}
+          <div className="bg-white rounded-[32px] p-8 border border-[#e3ebf2] shadow-xl shadow-slate-200/20 animate-rise" style={{ animationDelay: '100ms' }}>
+            <h3 className="text-xl font-bold text-[#1c3a59]">Starter</h3>
+            <p className="text-sm text-[#71859b] mt-2">Perfect for small trading businesses.</p>
+            <div className="my-6">
+              <span className="text-4xl font-bold text-[#132f50]">₹4,999</span>
+              <span className="text-[#71859b]">/year</span>
             </div>
+            <ul className="space-y-4 mb-8">
+              {['Single User', 'Accounting & Vouchers', 'Basic Inventory', 'Standard Reports', 'Email Support'].map((f, i) => (
+                <li key={i} className="flex items-center gap-3 text-sm text-[#3c5976]">
+                  <div className="h-5 w-5 rounded-full bg-[#eaf2f9] flex items-center justify-center">
+                    <Check className="h-3 w-3 text-[#366b9f]" />
+                  </div>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Button variant="outline" className="w-full justify-center py-6 rounded-2xl text-base">Get Started</Button>
+          </div>
 
-            <Button 
-              onClick={() => handleSelectPlan(plan.name)}
-              variant={plan.popular ? 'primary' : 'outline'}
-              className="w-full mt-8 rounded-xl py-3 justify-center"
-            >
-              Get Started
-            </Button>
-          </Card>
-        ))}
+          {/* Premium Plan */}
+          <div className="bg-[#132f50] rounded-[32px] p-8 shadow-2xl shadow-[#132f50]/30 animate-rise relative overflow-hidden" style={{ animationDelay: '200ms' }}>
+            <div className="absolute top-0 right-0 p-8">
+              <span className="inline-flex items-center rounded-full bg-[#376fa9] px-3 py-1 text-xs font-bold text-white">Most Popular</span>
+            </div>
+            <h3 className="text-xl font-bold text-white">Premium</h3>
+            <p className="text-sm text-[#9ab0c6] mt-2">For growing manufacturing & wholesale.</p>
+            <div className="my-6">
+              <span className="text-4xl font-bold text-white">₹12,999</span>
+              <span className="text-[#9ab0c6]">/year</span>
+            </div>
+            <ul className="space-y-4 mb-8">
+              {['Unlimited Users', 'Advanced Inventory (GRN, Multi-size)', 'Finish Goods Conversion', 'E-Way Bill & E-Invoice', 'Priority Phone Support'].map((f, i) => (
+                <li key={i} className="flex items-center gap-3 text-sm text-white">
+                  <div className="h-5 w-5 rounded-full bg-[#376fa9] flex items-center justify-center">
+                    <Check className="h-3 w-3 text-white" />
+                  </div>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Button className="w-full justify-center py-6 rounded-2xl text-base bg-white text-[#132f50] hover:bg-slate-100">Contact Sales</Button>
+          </div>
+        </div>
       </div>
     </div>
   );
