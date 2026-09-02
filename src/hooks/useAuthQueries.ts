@@ -44,7 +44,7 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: () => {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = localStorage.getItem("refresh_token");
       // Even if API fails, we clear state, but we try the API first
       return authApi.logout(refreshToken || "");
     },

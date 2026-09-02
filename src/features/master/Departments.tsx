@@ -11,11 +11,9 @@ export const DepartmentsPage = () => {
       searchKey="name"
       columns={[
         { key: 'name', header: 'Department Name', sortable: true },
-        { key: 'code', header: 'Department Code' },
       ]}
       formFields={[
         { name: 'name', label: 'Department Name', type: 'text', required: true },
-        { name: 'code', label: 'Department Code', type: 'text', required: true },
       ]}
     />
   );

@@ -20,6 +20,8 @@ interface GenericMasterPageProps {
   columns: any[];
   formFields: FormField[];
   searchKey?: string;
+  transformPayload?: (data: any) => any;
+  transformDefaultValues?: (item: any) => any;
 }
 
 export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
@@ -30,6 +32,8 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   columns,
   formFields,
   searchKey,
+  transformPayload,
+  transformDefaultValues,
 }) => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,7 +42,7 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   // Queries
   const { data, isLoading } = useQuery({
     queryKey: [queryKey],
-    queryFn: apiService.list,
+    queryFn: () => apiService.list(),
   });
 
   // Since apiService.list now returns BaseResponse<T[] | PaginatedData>, data.data contains the actual payload
@@ -70,7 +74,8 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   });
 
   const handleOpenModal = (item: any | null = null) => {
-    setEditingItem(item);
+    const defaultVals = item ? (transformDefaultValues ? transformDefaultValues(item) : item) : null;
+    setEditingItem(defaultVals);
     setIsModalOpen(true);
   };
 
@@ -80,10 +85,11 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   };
 
   const handleSubmit = (formData: any) => {
+    const finalData = transformPayload ? transformPayload(formData) : formData;
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, data: formData });
+      updateMutation.mutate({ id: editingItem.id, data: finalData });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(finalData);
     }
   };
 

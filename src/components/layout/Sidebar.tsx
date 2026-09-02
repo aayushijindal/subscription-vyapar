@@ -19,6 +19,9 @@ const groups: MenuGroup[] = [
   { label: 'Purchase Management', icon: <ReceiptText />, items: [
     { label: 'Purchase Entry', path: '/dashboard/purchases' },
     { label: 'GRN Entry', path: '/dashboard/grns' },
+    { label: 'GRN Item List', path: '/dashboard/grn-items' },
+    { label: 'Finish Goods Entry', path: '/dashboard/finish-goods' },
+    { label: 'Finish Goods List', path: '/dashboard/finish-goods-list' },
     { label: 'Purchase Return', path: '/dashboard/purchase-returns' }
   ]},
   { label: 'Sales Management', icon: <Tags />, items: [
@@ -33,7 +36,19 @@ const groups: MenuGroup[] = [
     { label: 'Journal Voucher', path: '/dashboard/journal-vouchers' }
   ]},
   { label: 'Reports', icon: <FileText />, items: [
-    { label: 'Ledger Statement', path: '/dashboard/ledger' }
+    { label: 'Ledger Statement', path: '/dashboard/ledger' },
+    { label: 'Finish Stock Statement', path: '/dashboard/reports/finish-stock' },
+    { label: 'Raw Stock Statement', path: '/dashboard/reports/raw-stock' },
+    { label: 'Book Order', path: '/dashboard/reports/book-order' },
+    { label: 'Pending Orders', path: '/dashboard/reports/pending-orders' },
+    { label: 'Finish Book Order', path: '/dashboard/reports/finish-book-order' },
+    { label: 'Purchase Statement', path: '/dashboard/reports/purchase-statement' },
+    { label: 'Sales Statement', path: '/dashboard/reports/sales-statement' },
+    { label: 'Party Wise Sales Statement', path: '/dashboard/reports/party-wise-sales' },
+    { label: 'GRN Statement', path: '/dashboard/reports/grn-statement' },
+    { label: 'Finish GRN Statement', path: '/dashboard/reports/finish-grn' },
+    { label: 'Sales Register', path: '/dashboard/reports/sales-register' },
+    { label: 'Purchase Register', path: '/dashboard/reports/purchase-register' }
   ]}
 ];
 

@@ -9,8 +9,10 @@ export interface FormField {
   type: FormFieldType;
   options?: { label: string; value: string | number }[]; // For select
   required?: boolean;
+  disabled?: boolean;
   placeholder?: string;
   defaultValue?: any;
+  onChange?: (e: React.ChangeEvent<any>, setValue: any) => void;
 }
 
 interface DynamicFormProps {
@@ -23,7 +25,7 @@ interface DynamicFormProps {
 }
 
 export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', defaultValues, isLoading }: DynamicFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues });
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({ defaultValues });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -38,8 +40,12 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
 
             {field.type === 'select' ? (
               <select
-                {...register(field.name, { required: field.required })}
-                className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                disabled={field.disabled}
+                {...register(field.name, { 
+                  required: field.required,
+                  onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
+                })}
+                className={`w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors ${field.disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white'}`}
               >
                 <option value="">Select {field.label}</option>
                 {field.options?.map(opt => (
@@ -50,17 +56,25 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  {...register(field.name, { required: field.required })}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/20"
+                  disabled={field.disabled}
+                  {...register(field.name, { 
+                    required: field.required,
+                    onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
+                  })}
+                  className={`w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/20 ${field.disabled ? 'cursor-not-allowed' : ''}`}
                 />
-                <span className="text-sm font-medium text-slate-700">{field.label}</span>
+                <span className={`text-sm font-medium ${field.disabled ? 'text-slate-400' : 'text-slate-700'}`}>{field.label}</span>
               </label>
             ) : (
               <input
                 type={field.type}
                 placeholder={field.placeholder}
-                {...register(field.name, { required: field.required })}
-                className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                disabled={field.disabled}
+                {...register(field.name, { 
+                  required: field.required,
+                  onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
+                })}
+                className={`w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors ${field.disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white'}`}
               />
             )}
 

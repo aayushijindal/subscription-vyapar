@@ -11,13 +11,13 @@ export const TransportsPage = () => {
       searchKey="transport_name"
       columns={[
         { key: 'transport_name', header: 'Transport Name', sortable: true },
-        { key: 'transport_id', header: 'Transport ID' },
-        { key: 'vehicle_no', header: 'Vehicle No' },
+        { key: 'contact_person', header: 'Contact Person' },
+        { key: 'contact_number', header: 'Contact Number' },
       ]}
       formFields={[
         { name: 'transport_name', label: 'Transport Name', type: 'text', required: true },
-        { name: 'transport_id', label: 'Transport ID', type: 'text' },
-        { name: 'vehicle_no', label: 'Vehicle No', type: 'text', required: true },
+        { name: 'contact_person', label: 'Contact Person', type: 'text' },
+        { name: 'contact_number', label: 'Contact Number', type: 'text' },
       ]}
     />
   );

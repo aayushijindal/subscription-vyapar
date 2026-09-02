@@ -16,14 +16,21 @@ export const CompaniesPage = () => {
         { key: 'state', header: 'State' },
       ]}
       formFields={[
+        { name: 'company_code', label: 'Company Code', type: 'text' },
         { name: 'name', label: 'Company Name', type: 'text', required: true },
-        { name: 'gstin_no', label: 'GSTIN', type: 'text', required: true },
-        { name: 'state', label: 'State', type: 'text' },
-        { name: 'state_code', label: 'State Code', type: 'text' },
-        { name: 'city', label: 'City', type: 'text' },
-        { name: 'pin_code', label: 'Pincode', type: 'text' },
-        { name: 'bank_name', label: 'Bank Name', type: 'text' },
-        { name: 'account_no', label: 'Account No', type: 'text' },
+        { name: 'email_id', label: 'Email-ID', type: 'text' },
+        { name: 'address', label: 'Address', type: 'text', required: true },
+        { name: 'country', label: 'Country', type: 'text', required: true },
+        { name: 'state', label: 'State', type: 'text', required: true },
+        { name: 'city', label: 'City', type: 'text', required: true },
+        { name: 'pin_code', label: 'Pin Code', type: 'text' },
+        { name: 'landline_no', label: 'Landline No', type: 'text' },
+        { name: 'mobile_no', label: 'Mobile No.', type: 'text', required: true },
+        { name: 'gstin_no', label: 'GST No.', type: 'text', required: true },
+        { name: 'pan_no', label: 'PAN No.', type: 'text', required: true },
+        { name: 'bank_name', label: 'Bank', type: 'text' },
+        { name: 'branch', label: 'Branch', type: 'text' },
+        { name: 'account_no', label: 'Account No.', type: 'text' },
         { name: 'ifsc_code', label: 'IFSC Code', type: 'text' },
       ]}
     />

@@ -11,11 +11,12 @@ export const AccountGroupsPage = () => {
       searchKey="name"
       columns={[
         { key: 'name', header: 'Account Group', sortable: true },
-        { key: 'parent', header: 'Parent Group ID' },
+        { key: 'account_type', header: 'Account Type' },
       ]}
       formFields={[
         { name: 'name', label: 'Group Name', type: 'text', required: true },
-        { name: 'parent', label: 'Parent Group ID (Optional)', type: 'number' },
+        { name: 'account_type', label: 'Account Type', type: 'text', required: true },
+        { name: 'annx_no', label: 'Annexure No.', type: 'number' },
       ]}
     />
   );

@@ -11,11 +11,9 @@ export const ItemGroupsPage = () => {
       searchKey="name"
       columns={[
         { key: 'name', header: 'Group Name', sortable: true },
-        { key: 'description', header: 'Description' },
       ]}
       formFields={[
         { name: 'name', label: 'Group Name', type: 'text', required: true },
-        { name: 'description', label: 'Description', type: 'text' },
       ]}
     />
   );
