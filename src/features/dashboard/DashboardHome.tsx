@@ -1,24 +1,170 @@
-import { useQuery } from '@tanstack/react-query';
-import { Building2, Mail, MapPin, Phone, ShieldCheck, Users } from 'lucide-react';
-import { masterApi } from '@/services/api/master';
-import { useAuth } from '@/context/authHelpers';
+import React from 'react';
+import { useProfile } from '@/hooks/useAuthQueries';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
+import { Building2, Users, Mail, Phone, MapPin, Shield, CheckCircle2 } from 'lucide-react';
 
 export const DashboardHome: React.FC = () => {
-  const { user } = useAuth();
-  
-  // Fetch active company details using masterApi instead of non-existent tenant API
-  const companyQuery = useQuery({ 
-    queryKey: ['company', user?.company], 
-    queryFn: () => masterApi.companies.get(user?.company as number),
-    enabled: !!user?.company
-  });
+  const { data: profileResponse, isLoading } = useProfile();
 
-  const company = companyQuery.data;
-  const members = [user].filter(Boolean) as any[]; // Mock members with current user for now
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-8">
+        <LoadingSkeleton count={1} className="h-20" />
+        <LoadingSkeleton count={1} className="h-10 w-64" />
+        <div className="grid md:grid-cols-3 gap-6">
+          <LoadingSkeleton count={1} className="h-48 md:col-span-2" />
+          <LoadingSkeleton count={1} className="h-48" />
+        </div>
+      </div>
+    );
+  }
 
-  if (companyQuery.isLoading) return <div className="grid min-h-[55vh] place-items-center"><div className="h-9 w-9 animate-spin rounded-full border-2 border-[#c5d8e8] border-t-[#234d7b]" /></div>;
-  if (companyQuery.isError) return <div className="rounded-2xl border border-[#f0d5d5] bg-white p-7"><h1 className="text-xl font-bold text-[#263d59]">Unable to load your workspace</h1><p className="mt-2 text-sm text-[#74869b]">Please check your connection and refresh the page. Your data is not shown until it is received from the API.</p></div>;
-  
-  return <div className="space-y-7 pb-6"><section><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7690ad]">Live company workspace</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-[#162d4a] md:text-3xl">Welcome, {user?.first_name || user?.email}</h1><p className="mt-1 text-sm text-[#72859c]">This information is loaded directly from your First Computer ERP account.</p></section><section className="grid gap-5 lg:grid-cols-3"><article className="dashboard-card rounded-2xl border border-[#e4eaf1] bg-white p-6 shadow-sm lg:col-span-2"><div className="flex items-start gap-4"><span className="grid h-12 w-12 place-items-center rounded-xl bg-[#eaf2f9] text-[#35699d]"><Building2 className="h-6 w-6" /></span><div><p className="text-xs font-bold uppercase tracking-widest text-[#8498af]">Active company</p><h2 className="mt-1 text-xl font-bold text-[#213d5b]">{company?.name || 'Your Company'}</h2><p className="mt-1 text-sm text-[#74879d]">Active account</p></div></div><div className="mt-7 grid gap-4 sm:grid-cols-3"><div><p className="text-[11px] font-bold uppercase tracking-wide text-[#91a2b2]">GSTIN</p><p className="mt-1 text-sm font-semibold text-[#3d5874]">{company?.gstin_no || 'Not provided'}</p></div><div><p className="text-[11px] font-bold uppercase tracking-wide text-[#91a2b2]">Bank Name</p><p className="mt-1 text-sm font-semibold text-[#3d5874]">{company?.bank_name || 'Not provided'}</p></div><div><p className="text-[11px] font-bold uppercase tracking-wide text-[#91a2b2]">Account No</p><p className="mt-1 text-sm font-semibold text-[#3d5874]">{company?.account_no || 'Not provided'}</p></div></div></article><article className="dashboard-card rounded-2xl border border-[#e4eaf1] bg-white p-6 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-xl bg-[#edf5ef] text-[#397452]"><Users className="h-5 w-5" /></span><p className="mt-5 text-xs font-bold uppercase tracking-widest text-[#8b9eaf]">Company users</p><p className="mt-1 text-3xl font-bold text-[#244260]">{members.length}</p><p className="mt-2 text-xs text-[#8194a8]">Only showing current session</p></article></section><section className="grid gap-5 lg:grid-cols-2"><article className="dashboard-card rounded-2xl border border-[#e4eaf1] bg-white p-6 shadow-sm"><h2 className="font-bold text-[#1c3653]">Company contact details</h2><div className="mt-5 space-y-4 text-sm text-[#607891]"><p className="flex items-center gap-3"><Mail className="h-4 w-4 text-[#5980aa]" />{company?.email_id || 'Not provided'}</p><p className="flex items-center gap-3"><Phone className="h-4 w-4 text-[#5980aa]" />{company?.mobile_no || 'Not provided'}</p><p className="flex items-center gap-3"><MapPin className="h-4 w-4 text-[#5980aa]" />{[company?.address, company?.city, company?.state, company?.country].filter(Boolean).join(', ') || 'Not provided'}</p></div></article><article className="dashboard-card rounded-2xl border border-[#e4eaf1] bg-white p-6 shadow-sm"><h2 className="font-bold text-[#1c3653]">Your access</h2><div className="mt-5 flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-[#eef3f8] text-[#426a94]"><ShieldCheck className="h-5 w-5" /></span><div><p className="font-semibold text-[#385572]">{user?.role || 'User'}</p><p className="text-xs text-[#8294a7]">{user?.email}</p></div></div></article></section><section className="dashboard-card overflow-hidden rounded-2xl border border-[#e4eaf1] bg-white shadow-sm"><div className="p-6"><h2 className="font-bold text-[#1c3653]">Team members</h2><p className="mt-1 text-xs text-[#8496a9]">Currently active session.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[550px] text-left"><thead className="bg-[#f7f9fc] text-[10px] font-bold uppercase tracking-wider text-[#8b9bad]"><tr><th className="px-6 py-3">Name</th><th className="px-6 py-3">Email</th><th className="px-6 py-3">Role</th><th className="px-6 py-3">Status</th></tr></thead><tbody>{members.map(member => <tr key={member.id || member.email} className="border-t border-[#edf1f5] text-sm"><td className="px-6 py-4 font-semibold text-[#385572]">{`${member.first_name || ''} ${member.last_name || ''}`.trim() || '—'}</td><td className="px-6 py-4 text-xs text-[#71859a]">{member.email}</td><td className="px-6 py-4 text-xs font-semibold text-[#527493]">{member.role || 'User'}</td><td className="px-6 py-4 text-xs text-[#4b9364]">Active</td></tr>)}</tbody></table></div></section></div>;
+  const user = profileResponse?.data?.user;
+  const company = profileResponse?.data?.company;
+  const workspace = profileResponse?.data?.workspace;
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-8">
+      
+      {/* Header */}
+      <div>
+        <p className="text-[10px] font-bold text-[#688099] tracking-wider uppercase mb-1">Live Company Workspace</p>
+        <h1 className="text-3xl font-bold text-[#132f50]">Welcome, {user?.first_name || user?.username}</h1>
+        <p className="text-sm text-[#688099] mt-1">This information is loaded directly from your First Computer ERP account.</p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          
+          {/* Active Company */}
+          <div className="md:col-span-2 bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex items-start gap-4">
+              <div className="h-12 w-12 rounded-xl bg-[#eaf2f9] flex items-center justify-center text-[#376fa9] shrink-0">
+                <Building2 className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Active Company</p>
+                <h3 className="text-xl font-bold text-[#132f50]">{company?.name || 'Not provided'}</h3>
+                <p className="text-sm text-[#688099]">Active account</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-[#f4f7fb]">
+              <div>
+                <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">GSTIN</p>
+                <p className="text-sm font-medium text-[#132f50]">{company?.gstin || 'Not provided'}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Bank Name</p>
+                <p className="text-sm font-medium text-[#132f50]">{company?.bank_name || 'Not provided'}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Account No</p>
+                <p className="text-sm font-medium text-[#132f50]">{company?.account_no || 'Not provided'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Company Users */}
+          <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm flex flex-col justify-between">
+            <div className="h-10 w-10 rounded-xl bg-[#eef7f2] flex items-center justify-center text-[#238b55] mb-4">
+              <Users className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Company Users</p>
+              <p className="text-4xl font-bold text-[#132f50] mb-2">{workspace?.total_users || 0}</p>
+              <p className="text-xs text-[#688099]">Only showing current session</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          
+          {/* Company Contact Details */}
+          <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm">
+            <h3 className="text-base font-bold text-[#132f50] mb-6">Company contact details</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-[#688099]" />
+                <span className="text-sm text-[#48647f]">{company?.email || 'Not provided'}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="h-4 w-4 text-[#688099]" />
+                <span className="text-sm text-[#48647f]">{company?.phone || 'Not provided'}</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="h-4 w-4 text-[#688099] shrink-0 mt-0.5" />
+                <span className="text-sm text-[#48647f]">{company?.address || 'Not provided'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Your Access */}
+          <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm">
+            <h3 className="text-base font-bold text-[#132f50] mb-6">Your access</h3>
+            <div className="flex items-center gap-4 bg-[#f8fafc] p-4 rounded-xl border border-[#e3ebf2]">
+              <div className="h-10 w-10 rounded-xl bg-[#eaf2f9] flex items-center justify-center text-[#376fa9]">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[#132f50]">{user?.role_name || user?.role}</p>
+                <p className="text-xs text-[#688099]">{user?.email}</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Team Members Table */}
+        <div className="bg-white rounded-2xl border border-[#e3ebf2] shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-[#e3ebf2]">
+            <h3 className="text-base font-bold text-[#132f50]">Team members</h3>
+            <p className="text-xs text-[#688099] mt-1">Currently active session.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-[#48647f]">
+              <thead className="bg-[#f8fafc] text-[10px] font-bold text-[#688099] uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">NAME</th>
+                  <th className="px-6 py-4">EMAIL</th>
+                  <th className="px-6 py-4">ROLE</th>
+                  <th className="px-6 py-4">STATUS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#e3ebf2]">
+                {workspace?.team_members?.map((member: any) => (
+                  <tr key={member.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-[#132f50]">
+                      {member.name || member.username}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-[#688099]">
+                      {member.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-[#688099]">
+                      {member.role_name || 'User'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#238b55]">
+                        <CheckCircle2 className="h-3 w-3" />
+                        {member.status || 'Active'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {(!workspace?.team_members || workspace.team_members.length === 0) && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-[#688099]">
+                      No team members found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
 };
 

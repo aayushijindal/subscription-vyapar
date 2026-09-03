@@ -11,7 +11,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ className = ''
       {Array.from({ length: count }).map((_, idx) => (
         <div
           key={idx}
-          className={`animate-pulse bg-slate-100 rounded-lg h-5 ${className}`}
+          className={`animate-pulse bg-slate-200 rounded-lg h-5 ${className}`}
         />
       ))}
     </div>

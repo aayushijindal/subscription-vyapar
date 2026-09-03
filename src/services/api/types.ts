@@ -6,16 +6,60 @@ export interface BaseResponse<T = any> {
 
 export interface User {
   id: number;
-  uuid?: string;
-  username?: string;
+  username: string;
   email: string;
   first_name: string;
   last_name: string;
-  role: string;
-  company: number;
-  financial_year: number;
-  mobile?: string;
+  phone_number?: string;
+  role: string | number;
+  role_name?: string;
+  company: number | null;
+  company_name?: string;
+  financial_year: number | null;
+  financial_year_name?: string;
   is_active?: boolean;
+  date_joined?: string;
+}
+
+export interface CompanyProfile {
+  id: number;
+  name: string;
+  company_code?: string;
+  gstin?: string;
+  bank_name?: string;
+  account_no?: string;
+  ifsc_code?: string;
+  branch?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pin_code?: string;
+  country?: string;
+}
+
+export interface TeamMember {
+  id: number;
+  username: string;
+  name: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  role_name: string;
+  status: string;
+}
+
+export interface Workspace {
+  total_users: number;
+  team_members: TeamMember[];
+}
+
+export interface ProfileData {
+  user: User;
+  company: CompanyProfile;
+  workspace: Workspace;
 }
 
 export interface Tenant {

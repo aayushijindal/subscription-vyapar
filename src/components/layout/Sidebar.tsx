@@ -6,7 +6,6 @@ interface SidebarProps { isOpen: boolean; setIsOpen: (open: boolean) => void; }
 type MenuGroup = { label: string; icon: React.ReactNode; items: { label: string; path: string }[] };
 const groups: MenuGroup[] = [
   { label: 'Master', icon: <UserRound />, items: [
-    { label: 'Company Master', path: '/dashboard/companies' },
     { label: 'Financial Year Master', path: '/dashboard/financial-years' },
     { label: 'Department', path: '/dashboard/departments' },
     { label: 'Sub Department', path: '/dashboard/sub-departments' },

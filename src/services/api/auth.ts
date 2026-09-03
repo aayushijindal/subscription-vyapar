@@ -1,5 +1,5 @@
 import { apiClient } from "./axios";
-import type { BaseResponse, AuthData } from "./types";
+import type { BaseResponse, AuthData, ProfileData } from "./types";
 
 export const authApi = {
   register: async (data: Record<string, any>) => {
@@ -26,8 +26,13 @@ export const authApi = {
     return response.data;
   },
 
-  getMe: async () => {
-    const response = await apiClient.get<BaseResponse<AuthData>>("/auth/me/");
+  getProfile: async () => {
+    const response = await apiClient.get<BaseResponse<ProfileData>>("/users/profile/");
+    return response.data;
+  },
+
+  updateProfile: async (data: Record<string, any>) => {
+    const response = await apiClient.put<BaseResponse<ProfileData>>("/users/profile/", data);
     return response.data;
   },
 
@@ -42,7 +47,7 @@ export const authApi = {
   },
 
   changePassword: async (data: Record<string, string>) => {
-    const response = await apiClient.post<BaseResponse<null>>("/auth/change-password/", data);
+    const response = await apiClient.put<BaseResponse<null>>("/users/change-password/", data);
     return response.data;
   },
 };

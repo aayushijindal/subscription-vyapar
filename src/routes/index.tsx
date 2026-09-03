@@ -14,6 +14,7 @@ const Contact = lazy(() => import('@/features/landing/Contact').then(m => ({ def
 const Login = lazy(() => import('@/features/auth/Login').then(m => ({ default: m.Login })));
 const Register = lazy(() => import('@/features/auth/Register').then(m => ({ default: m.Register })));
 const ForgotPassword = lazy(() => import('@/features/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
+const ProfilePage = lazy(() => import('@/features/auth/Profile').then(m => ({ default: m.ProfilePage })));
 
 const DashboardHome = lazy(() => import('@/features/dashboard/DashboardHome').then(m => ({ default: m.DashboardHome })));
 
@@ -83,6 +84,7 @@ export const AppRoutes: React.FC = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
+              <Route path="profile" element={<ProfilePage />} />
               
               {/* Master */}
               <Route path="accounts" element={<AccountsPage />} />

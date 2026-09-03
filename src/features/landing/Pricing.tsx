@@ -22,8 +22,7 @@ export const Pricing: React.FC = () => {
             <h3 className="text-xl font-bold text-[#1c3a59]">Starter</h3>
             <p className="text-sm text-[#71859b] mt-2">Perfect for small trading businesses.</p>
             <div className="my-6">
-              <span className="text-4xl font-bold text-[#132f50]">₹4,999</span>
-              <span className="text-[#71859b]">/year</span>
+              <span className="text-4xl font-bold text-[#132f50]">Custom</span>
             </div>
             <ul className="space-y-4 mb-8">
               {['Single User', 'Accounting & Vouchers', 'Basic Inventory', 'Standard Reports', 'Email Support'].map((f, i) => (
@@ -46,8 +45,7 @@ export const Pricing: React.FC = () => {
             <h3 className="text-xl font-bold text-white">Premium</h3>
             <p className="text-sm text-[#9ab0c6] mt-2">For growing manufacturing & wholesale.</p>
             <div className="my-6">
-              <span className="text-4xl font-bold text-white">₹12,999</span>
-              <span className="text-[#9ab0c6]">/year</span>
+              <span className="text-4xl font-bold text-white">Custom</span>
             </div>
             <ul className="space-y-4 mb-8">
               {['Unlimited Users', 'Advanced Inventory (GRN, Multi-size)', 'Finish Goods Conversion', 'E-Way Bill & E-Invoice', 'Priority Phone Support'].map((f, i) => (
@@ -59,7 +57,7 @@ export const Pricing: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <Button className="w-full justify-center py-6 rounded-2xl text-base bg-white text-[#132f50] hover:bg-slate-100">Contact Sales</Button>
+            <Button className="w-full justify-center py-6 rounded-2xl text-base bg-white !text-[#132f50] hover:bg-slate-100">Contact Sales</Button>
           </div>
         </div>
       </div>

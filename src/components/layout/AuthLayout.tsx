@@ -38,8 +38,8 @@ export const AuthLayout: React.FC = () => {
             "Switching to First Computer ERP helped our retail business consolidate GST filings and automate customer invoices in minutes."
           </blockquote>
           <div>
-            <p className="font-semibold">Amit Sharma</p>
-            <p className="text-sm text-blue-200">Director, TechMart Retail</p>
+            <p className="font-semibold">Sanjay Jindal</p>
+            <p className="text-sm text-blue-200">Director, First Computer </p>
           </div>
         </div>
       </div>

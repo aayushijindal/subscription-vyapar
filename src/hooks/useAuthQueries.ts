@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { authApi } from "../services/api";
 import { useAuth } from "../context/authHelpers";
 import { useNavigate } from "react-router-dom";
@@ -53,5 +53,28 @@ export const useLogout = () => {
       queryClient.clear();
       navigate("/login");
     }
+  });
+};
+
+export const useProfile = () => {
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: authApi.getProfile,
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: authApi.changePassword,
   });
 };

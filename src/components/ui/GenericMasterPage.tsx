@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Edit2, Trash2 } from 'lucide-react';
 import { Table } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { DynamicForm, type FormField } from '@/components/ui/DynamicForm';
-import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
 interface GenericMasterPageProps {
   title: string;
@@ -35,6 +35,7 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   transformPayload,
   transformDefaultValues,
 }) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -113,11 +114,19 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
   ];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-          {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="p-2 -ml-2 hover:bg-slate-100 rounded-full transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+            {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
+          </div>
         </div>
         <Button onClick={() => handleOpenModal()} className="gap-2 shadow-sm">
           <Plus className="w-4 h-4" /> Add New
@@ -125,7 +134,10 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
       </div>
 
       {isLoading ? (
-        <LoadingSkeleton count={3} />
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#eaf2f9] border-t-[#376fa9]" />
+          <p className="mt-4 text-sm font-medium text-[#688099]">Loading data...</p>
+        </div>
       ) : (
         <Table 
           columns={tableColumns} 
