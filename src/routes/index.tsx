@@ -63,6 +63,16 @@ const FinishGRNPage = lazy(() => import('@/features/reports/FinishGRN').then(m =
 const SalesRegisterPage = lazy(() => import('@/features/reports/SalesRegister').then(m => ({ default: m.SalesRegisterPage })));
 const PurchaseRegisterPage = lazy(() => import('@/features/reports/PurchaseRegister').then(m => ({ default: m.PurchaseRegisterPage })));
 
+
+// Super Admin Pages
+
+const SuperAdminLogin = lazy(() => import('@/features/super-admin/SuperAdminLogin').then(m => ({ default: m.SuperAdminLogin })));
+const SuperAdminProtectedRoute = lazy(() => import('@/features/super-admin/SuperAdminProtectedRoute').then(m => ({ default: m.SuperAdminProtectedRoute })));
+const SuperAdminLayout = lazy(() => import('@/components/layout/SuperAdminLayout').then(m => ({ default: m.SuperAdminLayout })));
+const SuperAdminDashboard = lazy(() => import('@/features/super-admin/SuperAdminDashboard').then(m => ({ default: m.SuperAdminDashboard })));
+const SuperAdminCompanies = lazy(() => import('@/features/super-admin/SuperAdminCompanies').then(m => ({ default: m.SuperAdminCompanies })));
+const SuperAdminInquiries = lazy(() => import('@/features/super-admin/SuperAdminInquiries').then(m => ({ default: m.SuperAdminInquiries })));
+
 const AppLoader = () => <div className="min-h-screen p-8"><LoadingSkeleton count={3} /></div>;
 
 export const AppRoutes: React.FC = () => {
@@ -81,6 +91,17 @@ export const AppRoutes: React.FC = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
+          
+          {/* Super Admin Routes */}
+          <Route path="/super-admin/login" element={<SuperAdminLogin />} />
+          <Route element={<SuperAdminProtectedRoute />}>
+            <Route path="/super-admin" element={<SuperAdminLayout />}>
+              <Route index element={<SuperAdminDashboard />} />
+              <Route path="companies" element={<SuperAdminCompanies />} />
+              <Route path="inquiries" element={<SuperAdminInquiries />} />
+            </Route>
+          </Route>
+
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Menu, X, ArrowRight, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/context/authHelpers';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,14 +58,24 @@ export const Navbar: React.FC = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
-            Login
-          </Link>
-          <Link to="/register">
-            <Button className="gap-2">
-              Get Started <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <Link to="/dashboard">
+              <Button className="gap-2">
+                <LayoutDashboard className="h-4 w-4" /> Go to Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
+                Login
+              </Link>
+              <Link to="/register">
+                <Button className="gap-2">
+                  Get Started <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu trigger */}
@@ -90,23 +102,31 @@ export const Navbar: React.FC = () => {
               </Link>
             ))}
             <hr className="border-slate-100" />
-            <Link 
-              to="/login" 
-              onClick={() => setIsOpen(false)} 
-              className="text-base font-medium text-slate-600 hover:text-blue-600 transition-colors block py-1"
-            >
-              Login
-            </Link>
-            <Link to="/register" onClick={() => setIsOpen(false)} className="block">
-              <Button className="w-full justify-center">
-                Get Started
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block">
+                <Button className="w-full justify-center gap-2">
+                  <LayoutDashboard className="h-4 w-4" /> Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-base font-medium text-slate-600 hover:text-blue-600 transition-colors block py-1"
+                >
+                  Login
+                </Link>
+                <Link to="/register" onClick={() => setIsOpen(false)} className="block">
+                  <Button className="w-full justify-center">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}
     </header>
   );
 };
-
-
