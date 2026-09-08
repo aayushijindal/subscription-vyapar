@@ -29,7 +29,7 @@ const processQueue = (error: any, token: string | null = null) => {
 apiClient.interceptors.response.use((response) => response, async (error) => {
   const originalRequest = error.config;
   
-  if (error.response?.status !== 401 || originalRequest?._retry || originalRequest?.url?.includes('/users/login/refresh/')) {
+  if (error.response?.status !== 401 || originalRequest?._retry || originalRequest?.url?.includes('refresh')) {
     return Promise.reject(error);
   }
   

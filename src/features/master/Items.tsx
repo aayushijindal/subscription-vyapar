@@ -54,7 +54,7 @@ export const ItemsPage = () => {
       ]}
       formFields={[
         { name: 'name', label: 'Item Name', type: 'text', required: true },
-        { name: 'hsn', label: 'HSN Code', type: 'text', required: true },
+        { name: 'hsn', label: 'HSN Code', type: 'text' },
         { 
           name: 'item_group', 
           label: 'Item Group', 
@@ -62,13 +62,13 @@ export const ItemsPage = () => {
           required: true,
           options: itemGroupOptions
         },
-        { name: 'unit', label: 'Unit', type: 'text', required: true },
-        { name: 'opening', label: 'Opening Balance', type: 'number', required: true },
-        { name: 'rate', label: 'Rate', type: 'number', required: true },
-        { name: 'pcs_kg', label: 'PCS / KG', type: 'number', required: true },
+        { name: 'unit', label: 'Unit', type: 'text' },
+        { name: 'opening', label: 'Opening Balance', type: 'number' },
+        { name: 'rate', label: 'Rate', type: 'number' },
+        { name: 'pcs_kg', label: 'PCS / KG', type: 'number' },
         { name: 'size', label: 'Size / Dimension', type: 'text' },
-        { name: 'gst', label: 'GST (%)', type: 'number', required: true },
-        { name: 'category', label: 'Category', type: 'select', required: true, options: [
+        { name: 'gst', label: 'GST (%)', type: 'number' },
+        { name: 'category', label: 'Category', type: 'select', options: [
           { label: 'RAW', value: 'RAW' },
           { label: 'FINISH', value: 'FINISH' }
         ]},

@@ -46,6 +46,39 @@ const stateCodeMap: Record<string, string> = {
 
 const stateOptions = Object.keys(stateCodeMap).sort().map(state => ({ label: state, value: state }));
 
+const stateCitiesMap: Record<string, string[]> = {
+  'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad'],
+  'Delhi': ['New Delhi', 'North Delhi', 'South Delhi', 'East Delhi', 'West Delhi'],
+  'Karnataka': ['Bengaluru', 'Mysuru', 'Hubli', 'Mangaluru', 'Belagavi'],
+  'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar'],
+  'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Noida', 'Ghaziabad'],
+  'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem'],
+  'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol', 'Siliguri'],
+  'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Bikaner'],
+  'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Nellore', 'Kurnool'],
+  'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad', 'Karimnagar', 'Khammam'],
+  'Madhya Pradesh': ['Indore', 'Bhopal', 'Jabalpur', 'Gwalior', 'Ujjain'],
+  'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia'],
+  'Punjab': ['Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala', 'Bathinda'],
+  'Haryana': ['Faridabad', 'Gurugram', 'Panipat', 'Ambala', 'Yamunanagar'],
+  'Kerala': ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur', 'Kollam'],
+  'Odisha': ['Bhubaneswar', 'Cuttack', 'Rourkela', 'Brahmapur', 'Sambalpur'],
+  'Assam': ['Guwahati', 'Silchar', 'Dibrugarh', 'Jorhat', 'Nagaon'],
+  'Jharkhand': ['Ranchi', 'Jamshedpur', 'Dhanbad', 'Bokaro', 'Deoghar'],
+  'Uttarakhand': ['Dehradun', 'Haridwar', 'Roorkee', 'Haldwani', 'Rudrapur'],
+  'Chhattisgarh': ['Raipur', 'Bhilai', 'Bilaspur', 'Korba', 'Durg'],
+  'Himachal Pradesh': ['Shimla', 'Dharamshala', 'Mandi', 'Solan', 'Kullu'],
+  'Goa': ['Panaji', 'Margao', 'Vasco da Gama', 'Mapusa', 'Ponda'],
+  'Arunachal Pradesh': ['Itanagar', 'Tawang', 'Ziro', 'Pasighat', 'Roing'],
+  'Sikkim': ['Gangtok', 'Namchi', 'Mangan', 'Gyalshing', 'Ravangla'],
+  'Tripura': ['Agartala', 'Dharmanagar', 'Kailashahar', 'Udaipur', 'Belonia'],
+  'Meghalaya': ['Shillong', 'Tura', 'Nongstoin', 'Jowai', 'Baghmara'],
+  'Manipur': ['Imphal', 'Thoubal', 'Bishnupur', 'Churachandpur', 'Senapati'],
+  'Nagaland': ['Kohima', 'Dimapur', 'Mokokchung', 'Tuensang', 'Wokha'],
+  'Mizoram': ['Aizawl', 'Lunglei', 'Champhai', 'Serchhip', 'Kolasib']
+};
+
+
 export const AccountsPage = () => {
   const { data: groupsData } = useQuery({
     queryKey: ['accountGroups'],
@@ -95,7 +128,13 @@ export const AccountsPage = () => {
         { key: 'balance_type', header: 'Balance Type' },
         { key: 'gstin', header: 'GSTIN' },
       ]}
-      formFields={[
+      formFields={(watch) => {
+        const selectedState = watch ? watch('state') : '';
+        const cityOptions = selectedState && stateCitiesMap[selectedState] 
+          ? stateCitiesMap[selectedState].map(city => ({ label: city, value: city })) 
+          : [];
+          
+        return [
         { name: 'name', label: 'Account Name', type: 'text', required: true },
         { 
           name: 'account_group', 
@@ -104,9 +143,14 @@ export const AccountsPage = () => {
           required: true,
           options: groupOptions
         },
-        { name: 'account_group_type', label: 'Account Group Type', type: 'text', required: true },
+        { name: 'account_group_type', label: 'Account Group Type', type: 'text' },
         { name: 'address', label: 'Address', type: 'text' },
-        { name: 'city', label: 'City', type: 'text' },
+        { 
+          name: 'city', 
+          label: 'City', 
+          type: cityOptions.length > 0 ? 'select' : 'text', 
+          options: cityOptions 
+        },
         { 
           name: 'state', 
           label: 'State', 
@@ -124,16 +168,17 @@ export const AccountsPage = () => {
         { name: 'mobile_no', label: 'Mobile No.', type: 'text' },
         { name: 'other_mobile_no', label: 'Other Mobile No.', type: 'text' },
         { name: 'email', label: 'Email', type: 'text' },
-        { name: 'opening_balance', label: 'Opening Balance', type: 'number', required: true },
-        { name: 'balance_type', label: 'Balance Type', type: 'select', options: [
+        { name: 'opening_balance', label: 'Opening Balance', type: 'number' },
+        { name: 'balance_type', label: 'Balance Type', type: 'select', required: true, options: [
           { label: 'Debit', value: 'Debit' }, { label: 'Credit', value: 'Credit' }
         ]},
         { name: 'gstin', label: 'GSTIN', type: 'text' },
         { name: 'pan_no', label: 'PAN No.', type: 'text' },
         { name: 'tan_no', label: 'TAN No.', type: 'text' },
-        { name: 'pin_code', label: 'Pincode', type: 'text', required: true },
+        { name: 'pin_code', label: 'Pincode', type: 'text' },
         { name: 'state_code', label: 'State Code', type: 'text', disabled: true },
-      ]}
+      ];
+      }}
     />
   );
 };

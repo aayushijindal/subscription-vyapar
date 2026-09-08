@@ -16,7 +16,7 @@ export interface FormField {
 }
 
 interface DynamicFormProps {
-  fields: FormField[];
+  fields: FormField[] | ((watch: (name: string) => any) => FormField[]);
   onSubmit: (data: any) => void;
   onCancel?: () => void;
   submitLabel?: string;
@@ -25,12 +25,13 @@ interface DynamicFormProps {
 }
 
 export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', defaultValues, isLoading }: DynamicFormProps) {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm({ defaultValues });
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm({ defaultValues });
+  const resolvedFields = typeof fields === 'function' ? fields(watch) : fields;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {fields.map((field) => (
+        {resolvedFields.map((field) => (
           <div key={field.name} className={`flex flex-col gap-1.5 ${field.type === 'checkbox' ? 'sm:col-span-2 flex-row items-center gap-3' : ''}`}>
             {field.type !== 'checkbox' && (
               <label className="text-sm font-medium text-slate-700">

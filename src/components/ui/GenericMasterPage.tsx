@@ -18,7 +18,7 @@ interface GenericMasterPageProps {
     delete: (id: string | number) => Promise<any>;
   };
   columns: any[];
-  formFields: FormField[];
+  formFields: FormField[] | ((watch: (name: string) => any) => FormField[]);
   searchKey?: string;
   transformPayload?: (data: any) => any;
   transformDefaultValues?: (item: any) => any;
