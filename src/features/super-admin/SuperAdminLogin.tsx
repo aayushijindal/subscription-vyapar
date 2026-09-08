@@ -22,13 +22,10 @@ export const SuperAdminLogin: React.FC = () => {
       const response = await superAdminApi.login({ username, password });
       
       // Store token depending on how auth flow works. Assuming standard response format.
-      if (response.access || response.data?.access) {
-        localStorage.setItem('access_token', response.access || response.data?.access);
-        if (response.refresh || response.data?.refresh) {
-          localStorage.setItem('refresh_token', response.refresh || response.data?.refresh);
-        }
+      if (response.access) {
+        
         // Force auth state update
-        login(response.access || response.data?.access, response.refresh || response.data?.refresh);
+        login(response);
         navigate('/super-admin');
       } else {
         throw new Error('Invalid token received from server');
