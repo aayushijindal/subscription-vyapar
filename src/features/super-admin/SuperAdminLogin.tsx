@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/authHelpers';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield, Loader2, Eye, EyeOff } from 'lucide-react';
 import { superAdminApi } from '@/services/api/superAdmin';
 
 export const SuperAdminLogin: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -18,22 +19,18 @@ export const SuperAdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await superAdminApi.login({ email, password });
+      const response = await superAdminApi.login({ username, password });
       
       // Store token depending on how auth flow works. Assuming standard response format.
-      if (response.access || response.data?.access) {
-        localStorage.setItem('access_token', response.access || response.data?.access);
-        if (response.refresh || response.data?.refresh) {
-          localStorage.setItem('refresh_token', response.refresh || response.data?.refresh);
-        }
-        // Force auth state update
-        login(response.access || response.data?.access, response.refresh || response.data?.refresh);
+      if (response.access) {
+        // Force auth state update using standard auth handler
+        login(response);
         navigate('/super-admin');
       } else {
         throw new Error('Invalid token received from server');
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Login failed. Please verify your credentials.');
+      setError(err.response?.data?.message || err.response?.data?.detail || err.response?.data?.error || 'Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -59,27 +56,40 @@ export const SuperAdminLogin: React.FC = () => {
             )}
             
             <div className="space-y-1.5">
-              <label className="text-[13px] font-semibold text-[#25283A]">Email Address</label>
+              <label className="text-[13px] font-semibold text-[#25283A]">Username</label>
               <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full bg-[#FFFFFF] border border-[#DFE3EC] text-[14px] text-[#25283A] rounded-[10px] p-3 outline-none focus:border-[#8B83E5] focus:ring-2 focus:ring-[#8B83E5]/20 transition-all placeholder:text-[#9299AA]"
-                placeholder="admin@firstcomputererp.com"
+                placeholder="admin"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-[13px] font-semibold text-[#25283A]">Password</label>
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-[#FFFFFF] border border-[#DFE3EC] text-[14px] text-[#25283A] rounded-[10px] p-3 outline-none focus:border-[#8B83E5] focus:ring-2 focus:ring-[#8B83E5]/20 transition-all placeholder:text-[#9299AA]"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full bg-[#FFFFFF] border border-[#DFE3EC] text-[14px] text-[#25283A] rounded-[10px] py-3 pl-3 pr-10 outline-none focus:border-[#8B83E5] focus:ring-2 focus:ring-[#8B83E5]/20 transition-all placeholder:text-[#9299AA]"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9299AA] hover:text-[#687085] focus:outline-none transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button 

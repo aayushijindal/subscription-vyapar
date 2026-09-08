@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Building2, CreditCard, Activity, ArrowUpRight, ArrowDownRight, Globe, Loader2, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Users, Building2, Activity, Globe, Loader2, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { superAdminApi } from '@/services/api/superAdmin';
 

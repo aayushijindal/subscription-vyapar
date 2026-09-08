@@ -71,6 +71,7 @@ const SuperAdminProtectedRoute = lazy(() => import('@/features/super-admin/Super
 const SuperAdminLayout = lazy(() => import('@/components/layout/SuperAdminLayout').then(m => ({ default: m.SuperAdminLayout })));
 const SuperAdminDashboard = lazy(() => import('@/features/super-admin/SuperAdminDashboard').then(m => ({ default: m.SuperAdminDashboard })));
 const SuperAdminCompanies = lazy(() => import('@/features/super-admin/SuperAdminCompanies').then(m => ({ default: m.SuperAdminCompanies })));
+const SuperAdminUsers = lazy(() => import('@/features/super-admin/SuperAdminUsers').then(m => ({ default: m.SuperAdminUsers })));
 const SuperAdminInquiries = lazy(() => import('@/features/super-admin/SuperAdminInquiries').then(m => ({ default: m.SuperAdminInquiries })));
 
 const AppLoader = () => <div className="min-h-screen p-8"><LoadingSkeleton count={3} /></div>;
@@ -98,6 +99,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/super-admin" element={<SuperAdminLayout />}>
               <Route index element={<SuperAdminDashboard />} />
               <Route path="companies" element={<SuperAdminCompanies />} />
+              <Route path="users" element={<SuperAdminUsers />} />
               <Route path="inquiries" element={<SuperAdminInquiries />} />
             </Route>
           </Route>

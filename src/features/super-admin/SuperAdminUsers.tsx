@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Filter, Users as UsersIcon, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { superAdminApi, User } from '@/services/api/superAdmin';
+import { superAdminApi, type User } from '@/services/api/superAdmin';
 
 export const SuperAdminUsers: React.FC = () => {
   const queryClient = useQueryClient();
