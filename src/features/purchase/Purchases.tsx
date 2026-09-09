@@ -13,6 +13,7 @@ export const PurchasesPage: React.FC = () => {
   const [rcmPurchase, setRcmPurchase] = useState('NO');
   const [discountData, setDiscountData] = useState<{type: 'PERCENT' | 'AMOUNT', value: number | ''}>({type: 'PERCENT', value: ''});
   const [freight, setFreight] = useState<number | ''>('');
+  const [loadingType, setLoadingType] = useState<'AUTO' | 'MANUAL'>('MANUAL');
   const [loading, setLoading] = useState<number | ''>('');
   const [tdsData, setTdsData] = useState<{type: 'PERCENT' | 'AMOUNT', value: number | ''}>({type: 'PERCENT', value: ''});
   
@@ -92,7 +93,7 @@ export const PurchasesPage: React.FC = () => {
   const tdsAmountUsed = Number(tdsAmountDisplay) || 0;
 
   const taxableAfterDiscount = totalTaxable - cashDiscountAmount;
-  const applicableLoading = rcmPurchase === 'YES' ? 0 : (Number(loading) || 0);
+  const applicableLoading = rcmPurchase === 'YES' ? 0 : (loadingType === 'AUTO' ? (totalTaxable * 0.35) : (Number(loading) || 0));
   const gstBase = taxableAfterDiscount + (Number(freight) || 0) + applicableLoading;
   
   const cgstAmount = gstBase * 0.09;
@@ -126,12 +127,16 @@ export const PurchasesPage: React.FC = () => {
         lr_weight: lrWeight,
         rcm_purchase: rcmPurchase,
         freight: freight || 0,
-        loading_additional: loading || 0,
+        loading_additional: Number(applicableLoading.toFixed(2)),
         discount_percentage: discountData.type === 'PERCENT' ? (discountData.value || 0) : 0,
         discount: discountAmountDisplay || 0,
         tds_percentage: tdsData.type === 'PERCENT' ? (tdsData.value || 0) : 0,
         tds_amount: tdsAmountUsed || 0,
-        items: items,
+        items: items.map((item: any) => ({
+          ...item,
+          item_id: item.item_name || item.item_id,
+          line_total: item.amount || 0
+        })),
         total_taxable: Number(calculateTotalTaxable().toFixed(2)),
         cgst_amount: Number(cgstAmount.toFixed(2)),
         sgst_amount: Number(sgstAmount.toFixed(2)),
@@ -178,6 +183,7 @@ export const PurchasesPage: React.FC = () => {
       setLrWeight(purchase.lr_weight || '0');
       setRcmPurchase(purchase.rcm_purchase || 'NO');
       setFreight(purchase.freight || '');
+      setLoadingType('MANUAL');
       setLoading(purchase.loading_additional || '');
       setDiscountData({type: 'PERCENT', value: purchase.discount_percentage || ''});
       setTdsData({type: 'PERCENT', value: purchase.tds_percentage || ''});
@@ -227,6 +233,7 @@ export const PurchasesPage: React.FC = () => {
     setLrWeight('0');
     setRcmPurchase('NO');
     setFreight('');
+    setLoadingType('MANUAL');
     setLoading('');
     setDiscountData({type: 'PERCENT', value: ''});
     setTdsData({type: 'PERCENT', value: ''});
@@ -240,7 +247,7 @@ export const PurchasesPage: React.FC = () => {
       <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 mb-6">
           <div>
-            <h1 className="text-[18px] font-black text-[#1E293B] tracking-tight uppercase">PURCHASE ENTRY LIST</h1>
+            <h1 className="text-[18px] font-black text-[#12213b] tracking-tight uppercase">PURCHASE ENTRY LIST</h1>
             <p className="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Manage Purchase Invoices</p>
           </div>
           <div className="flex items-center gap-3">
@@ -254,10 +261,10 @@ export const PurchasesPage: React.FC = () => {
             <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <FileText className="w-3.5 h-3.5" /> PDF
             </button>
-            <button className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+            <button className="bg-[#142b4a] hover:bg-[#0f1f38] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <Upload className="w-3.5 h-3.5" /> Import
             </button>
-            <button onClick={handleNewEntry} className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+            <button onClick={handleNewEntry} className="bg-[#142b4a] hover:bg-[#0f1f38] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <Plus className="w-4 h-4" /> Add New
             </button>
           </div>
@@ -294,11 +301,11 @@ export const PurchasesPage: React.FC = () => {
                     <tr key={purchase.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-slate-300" /></td>
                       <td className="py-4 px-4 text-slate-500">{dateStr}</td>
-                      <td className="py-4 px-4 text-[#1E293B]">{purchase.invoice_no || '-'}</td>
-                      <td className="py-4 px-4 text-[#1E293B] uppercase">{partyName || '-'}</td>
+                      <td className="py-4 px-4 text-[#12213b]">{purchase.invoice_no || '-'}</td>
+                      <td className="py-4 px-4 text-[#12213b] uppercase">{partyName || '-'}</td>
                       <td className="py-4 px-4 text-slate-700 text-right">₹ {purchase.grand_total ? Number(purchase.grand_total).toLocaleString('en-IN') : '0'}</td>
                       <td className="py-4 px-4 text-center">
-                        <button className="bg-slate-100 text-[#1E293B] border border-slate-200 px-3 py-1.5 rounded text-[10px] uppercase font-black hover:bg-slate-200 transition-colors shadow-sm">GRN</button>
+                        <button className="bg-slate-100 text-[#12213b] border border-slate-200 px-3 py-1.5 rounded text-[10px] uppercase font-black hover:bg-slate-200 transition-colors shadow-sm">GRN</button>
                       </td>
                       <td className="py-4 px-4 text-center">
                         <div className="flex justify-center items-center gap-2">
@@ -331,7 +338,7 @@ export const PurchasesPage: React.FC = () => {
         <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         </button>
-        <h1 className="text-[20px] font-black text-[#1E293B] tracking-tight uppercase">{editingId ? 'Edit Purchase Entry' : 'Create Purchase Entry'}</h1>
+        <h1 className="text-[20px] font-black text-[#12213b] tracking-tight uppercase">{editingId ? 'Edit Purchase Entry' : 'Create Purchase Entry'}</h1>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
@@ -346,19 +353,19 @@ export const PurchasesPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Invoice Number</label>
-              <input type="text" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} placeholder="INV NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} placeholder="INV NO." className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Invoice Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Vehicle Number</label>
-              <input type="text" placeholder="GJ-01-XX-0000" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} />
+              <input type="text" placeholder="GJ-01-XX-0000" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">RCM Purchase</label>
-              <select value={rcmPurchase} onChange={(e) => setRcmPurchase(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none">
+              <select value={rcmPurchase} onChange={(e) => setRcmPurchase(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none">
                 <option>NO</option>
                 <option>YES</option>
               </select>
@@ -367,76 +374,76 @@ export const PurchasesPage: React.FC = () => {
             {/* Row 2 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Order No.</label>
-              <input type="text" placeholder="ORDER NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
+              <input type="text" placeholder="ORDER NO." className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Order Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR No.</label>
-              <input type="text" placeholder="LR NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={lrNo} onChange={(e) => setLrNo(e.target.value)} />
+              <input type="text" placeholder="LR NO." className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={lrNo} onChange={(e) => setLrNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={lrDate} onChange={(e) => setLrDate(e.target.value)} />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={lrDate} onChange={(e) => setLrDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Desp From</label>
-              <input type="text" placeholder="FROM" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despFrom} onChange={(e) => setDespFrom(e.target.value)} />
+              <input type="text" placeholder="FROM" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despFrom} onChange={(e) => setDespFrom(e.target.value)} />
             </div>
 
             {/* Row 3 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Desp To</label>
-              <input type="text" placeholder="TO" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despTo} onChange={(e) => setDespTo(e.target.value)} />
+              <input type="text" placeholder="TO" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despTo} onChange={(e) => setDespTo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Party Name</label>
-              <select value={partyId} onChange={(e) => setPartyId(Number(e.target.value))} className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-[#2563EB] font-medium transition-all outline-none">
+              <label className="text-[11px] font-bold text-[#2b5f9d] uppercase tracking-wider">Party Name</label>
+              <select value={partyId} onChange={(e) => setPartyId(Number(e.target.value))} className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-[#2b5f9d] font-medium transition-all outline-none">
                 <option value="">-- SELECT PARTY --</option>
                 {(Array.isArray(parties) ? parties : parties?.results || []).map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Party GSTIN</label>
-              <input type="text" placeholder="GSTIN" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="GSTIN" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Book Name</label>
-              <select className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none">
+              <label className="text-[11px] font-bold text-[#2b5f9d] uppercase tracking-wider">Book Name</label>
+              <select className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none">
                 <option value="">-- SELECT BOOK --</option>
                 {(Array.isArray(parties) ? parties : parties?.results || []).map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">E-Way Bill No.</label>
-              <input type="text" placeholder="E-WAY BILL NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={ewayBillNo} onChange={(e) => setEwayBillNo(e.target.value)} />
+              <input type="text" placeholder="E-WAY BILL NO." className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={ewayBillNo} onChange={(e) => setEwayBillNo(e.target.value)} />
             </div>
 
             {/* Row 4 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bill Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={billDate} onChange={(e) => setBillDate(e.target.value)} />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={billDate} onChange={(e) => setBillDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Select Transport</label>
-              <select className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none">
+              <label className="text-[11px] font-bold text-[#2b5f9d] uppercase tracking-wider">Select Transport</label>
+              <select className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none">
                 <option value="">-- SELECT TRANSPORT --</option>
                 {(Array.isArray(transports) ? transports : transports?.results || []).map((t: any) => <option key={t.id} value={t.id}>{t.name || t.transport_name}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Freight</label>
-              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" />
+              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Payment</label>
-              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={payment} onChange={(e) => setPayment(e.target.value)} />
+              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={payment} onChange={(e) => setPayment(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR Weight</label>
-              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={lrWeight} onChange={(e) => setLrWeight(e.target.value)} />
+              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={lrWeight} onChange={(e) => setLrWeight(e.target.value)} />
             </div>
           </div>
 
@@ -444,8 +451,8 @@ export const PurchasesPage: React.FC = () => {
 
           {/* Dynamic Items Section */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[13px] font-black text-[#1E293B] tracking-wide uppercase">Purchase Items Listing</h2>
-            <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 hover:text-[#4338CA] transition-colors bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 hover:border-[#4338CA]/30">
+            <h2 className="text-[13px] font-black text-[#12213b] tracking-wide uppercase">Purchase Items Listing</h2>
+            <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 hover:text-[#2b5f9d] transition-colors bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 hover:border-[#2b5f9d]/30">
               <Plus className="w-3 h-3" /> ADD ROW
             </button>
           </div>
@@ -468,19 +475,19 @@ export const PurchasesPage: React.FC = () => {
                   <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="py-3 px-4 text-center font-medium text-slate-400">{idx + 1}</td>
                     <td className="py-3 px-4">
-                      <select value={item.item_name} onChange={(e) => handleItemChange(item.id, 'item_name', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-slate-500 outline-none focus:border-[#4338CA]">
+                      <select value={item.item_name} onChange={(e) => handleItemChange(item.id, 'item_name', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-slate-500 outline-none focus:border-[#2b5f9d]">
                         <option value="">-- SELECT ITEM --</option>
                         {(Array.isArray(itemsList) ? itemsList : itemsList?.results || []).map((i: any) => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                       </select>
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.nos || ''} onChange={(e) => handleItemChange(item.id, 'nos', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.nos || ''} onChange={(e) => handleItemChange(item.id, 'nos', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#2b5f9d]" />
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.quantity || ''} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.quantity || ''} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#2b5f9d]" />
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.rate || ''} onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.rate || ''} onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)} placeholder="0" className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#2b5f9d]" />
                     </td>
                     <td className="py-3 px-4 text-right font-bold text-slate-700">
                       ₹ {(Number(item.quantity || 0) * Number(item.rate || 0)).toFixed(2)}
@@ -500,7 +507,7 @@ export const PurchasesPage: React.FC = () => {
           <div className="flex justify-end">
             <div className="w-[400px] border border-slate-200/60 rounded-xl overflow-hidden">
               <div className="bg-[#F8F9FC] py-3 px-5 border-b border-slate-200/60">
-                <h3 className="text-[12px] font-black text-[#1E293B] tracking-wide uppercase">Purchase Bill Summary</h3>
+                <h3 className="text-[12px] font-black text-[#12213b] tracking-wide uppercase">Purchase Bill Summary</h3>
               </div>
               
               <div className="p-5 space-y-4">
@@ -513,27 +520,41 @@ export const PurchasesPage: React.FC = () => {
                   <span>Cash Discount (-)</span>
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <input type="number" value={discountPercentDisplay} onChange={(e) => setDiscountData({type: 'PERCENT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-16 text-center border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={discountPercentDisplay} onChange={(e) => setDiscountData({type: 'PERCENT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-16 text-center border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#2b5f9d]" />
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400">%</span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-red-500 font-bold mr-1">- ₹</span>
-                      <input type="number" value={discountAmountDisplay} onChange={(e) => setDiscountData({type: 'AMOUNT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-20 text-right border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={discountAmountDisplay} onChange={(e) => setDiscountData({type: 'AMOUNT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-20 text-right border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#2b5f9d]" />
                     </div>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center text-[12px] font-bold text-slate-600 uppercase">
                   <span>Freight / Other (+)</span>
-                  <input type="number" value={freight} onChange={(e) => setFreight(e.target.value === '' ? '' : Number(e.target.value))} placeholder="0" className="w-24 text-right border border-slate-200 rounded p-1.5 text-[12px] outline-none focus:border-[#4338CA]" />
+                  <input type="number" value={freight} onChange={(e) => setFreight(e.target.value === '' ? '' : Number(e.target.value))} placeholder="0" className="w-24 text-right border border-slate-200 rounded p-1.5 text-[12px] outline-none focus:border-[#2b5f9d]" />
                 </div>
 
                 <div className="flex justify-between items-center text-[12px] font-bold text-slate-600 uppercase">
                   <div className="flex items-center gap-2">
                     <span>Loading (+)</span>
-                    <span className="bg-[#10B981]/10 text-[#10B981] px-1.5 py-0.5 rounded text-[9px] tracking-wider">AUTO</span>
+                    <select 
+                      value={loadingType} 
+                      onChange={(e) => setLoadingType(e.target.value as 'AUTO'|'MANUAL')}
+                      className="bg-slate-100 border border-slate-200 text-slate-600 px-1.5 py-0.5 rounded text-[10px] tracking-wider outline-none"
+                    >
+                      <option value="MANUAL">MANUAL</option>
+                      <option value="AUTO">AUTO</option>
+                    </select>
                   </div>
-                  <input type="number" value={loading} onChange={(e) => setLoading(e.target.value === '' ? '' : Number(e.target.value))} disabled={rcmPurchase === 'YES'} placeholder="0" className={`w-24 text-right border border-slate-200 rounded p-1.5 text-[12px] outline-none ${rcmPurchase === 'YES' ? 'bg-slate-100 cursor-not-allowed' : 'focus:border-[#4338CA]'}`} />
+                  <input 
+                    type="number" 
+                    value={loadingType === 'AUTO' ? (totalTaxable * 0.35).toFixed(2) : loading} 
+                    onChange={(e) => loadingType === 'MANUAL' && setLoading(e.target.value === '' ? '' : Number(e.target.value))} 
+                    disabled={rcmPurchase === 'YES' || loadingType === 'AUTO'} 
+                    placeholder="0" 
+                    className={`w-24 text-right border border-slate-200 rounded p-1.5 text-[12px] outline-none ${rcmPurchase === 'YES' || loadingType === 'AUTO' ? 'bg-slate-100 cursor-not-allowed' : 'focus:border-[#2b5f9d]'}`} 
+                  />
                 </div>
 
                 <div className="flex justify-between items-center text-[12px] font-bold text-slate-600 uppercase pt-2 border-t border-slate-100">
@@ -549,12 +570,12 @@ export const PurchasesPage: React.FC = () => {
                   <span>TDS (-)</span>
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <input type="number" value={tdsPercentDisplay} onChange={(e) => setTdsData({type: 'PERCENT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-16 text-center border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={tdsPercentDisplay} onChange={(e) => setTdsData({type: 'PERCENT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-16 text-center border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#2b5f9d]" />
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400">%</span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-red-500 font-bold mr-1">- ₹</span>
-                      <input type="number" value={tdsAmountDisplay} onChange={(e) => setTdsData({type: 'AMOUNT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-20 text-right border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={tdsAmountDisplay} onChange={(e) => setTdsData({type: 'AMOUNT', value: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="0" className="w-20 text-right border border-slate-200 rounded p-1 text-[12px] text-red-500 font-bold outline-none focus:border-[#2b5f9d]" />
                     </div>
                   </div>
                 </div>
@@ -570,13 +591,13 @@ export const PurchasesPage: React.FC = () => {
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-slate-200">
-                  <span className="text-[15px] font-black text-[#1E293B] uppercase tracking-wide">Net Payable</span>
-                  <span className="text-[18px] font-black text-[#1E293B]">₹ {netPayable.toFixed(2)}</span>
+                  <span className="text-[15px] font-black text-[#12213b] uppercase tracking-wide">Net Payable</span>
+                  <span className="text-[18px] font-black text-[#12213b]">₹ {netPayable.toFixed(2)}</span>
                 </div>
 
                 <div className="pt-4 flex items-center justify-end gap-4">
                   <button onClick={() => setIsFormOpen(false)} className="text-[11px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wider">Cancel</button>
-                  <button onClick={handleSubmit} className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 transition-colors">
+                  <button onClick={handleSubmit} className="bg-[#142b4a] hover:bg-[#0f1f38] text-white px-6 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 transition-colors">
                     <Save className="w-4 h-4" /> {editingId ? 'Update Purchase Bill' : 'Post Purchase Bill'}
                   </button>
                 </div>

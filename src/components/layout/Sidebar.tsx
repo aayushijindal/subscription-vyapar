@@ -20,7 +20,6 @@ const groups: MenuGroup[] = [
     { label: 'GRN Entry', path: '/dashboard/grns' },
     { label: 'GRN Item List', path: '/dashboard/grn-items' },
     { label: 'Finish Goods Entry', path: '/dashboard/finish-goods' },
-    { label: 'Finish Goods List', path: '/dashboard/finish-goods-list' },
     { label: 'Purchase Return', path: '/dashboard/purchase-returns' }
   ]},
   { label: 'Sales Management', icon: <Tags />, items: [

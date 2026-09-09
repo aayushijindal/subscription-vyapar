@@ -29,5 +29,6 @@ export const purchaseApi = {
   getPurchaseReturns: (params?: any) => api.get('/purchase/purchase-returns/', { params }),
   getPurchaseReturn: (id: number) => api.get(`/purchase/purchase-returns/${id}/`),
   createPurchaseReturn: (data: any) => api.post('/purchase/purchase-returns/', data),
+  updatePurchaseReturn: (id: number, data: any) => api.put(`/purchase/purchase-returns/${id}/`, data),
   deletePurchaseReturn: (id: number) => api.delete(`/purchase/purchase-returns/${id}/`)
 };
