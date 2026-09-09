@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Search, X, Save } from 'lucide-react';
+import { Plus, Search, X, Save, Pencil, Trash2, Download, FileText, Printer, FileSpreadsheet, Upload } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { purchaseApi } from '../../services/api/purchase';
 import { useEffect } from 'react';
 export const PurchasesPage: React.FC = () => {
@@ -19,6 +20,22 @@ export const PurchasesPage: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [invoiceNo, setInvoiceNo] = useState('');
   const [partyId, setPartyId] = useState<number | ''>('');
+
+  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [vehicleNo, setVehicleNo] = useState('');
+  const [orderNo, setOrderNo] = useState('');
+  const [orderDate, setOrderDate] = useState('');
+  const [lrNo, setLrNo] = useState('');
+  const [lrDate, setLrDate] = useState('');
+  const [despFrom, setDespFrom] = useState('');
+  const [despTo, setDespTo] = useState('');
+  const [bookName, setBookName] = useState('');
+  const [ewayBillNo, setEwayBillNo] = useState('');
+  const [billDate, setBillDate] = useState(new Date().toISOString().split('T')[0]);
+  const [transport, setTransport] = useState('');
+  const [payment, setPayment] = useState('45 Days');
+  const [lrWeight, setLrWeight] = useState('0');
+  
 
   useEffect(() => {
     // Fetch master dropdowns
@@ -93,22 +110,47 @@ export const PurchasesPage: React.FC = () => {
       const payload = {
         party_id: partyId || 1,
         invoice_no: invoiceNo,
+        invoice_date: invoiceDate || null,
+        vehicle_no: vehicleNo,
+        order_no: orderNo,
+        order_date: orderDate || null,
+        lr_no: lrNo,
+        lr_date: lrDate || null,
+        desp_from: despFrom,
+        desp_to: despTo,
+        book_name: bookName,
+        eway_bill_no: ewayBillNo,
+        bill_date: billDate || null,
+        transport: transport,
+        payment: payment,
+        lr_weight: lrWeight,
+        rcm_purchase: rcmPurchase,
+        freight: freight || 0,
+        loading_additional: loading || 0,
+        discount_percentage: discountData.type === 'PERCENT' ? (discountData.value || 0) : 0,
+        discount: discountAmountDisplay || 0,
+        tds_percentage: tdsData.type === 'PERCENT' ? (tdsData.value || 0) : 0,
+        tds_amount: tdsAmountUsed || 0,
         items: items,
-        total_taxable: calculateTotalTaxable()
+        total_taxable: Number(calculateTotalTaxable().toFixed(2)),
+        cgst_amount: Number(cgstAmount.toFixed(2)),
+        sgst_amount: Number(sgstAmount.toFixed(2)),
+        round_off: Number(roundOff.toFixed(2)),
+        grand_total: Number(netPayable.toFixed(2))
       };
       
       if (editingId) {
         await purchaseApi.updatePurchase(editingId, payload);
-        alert('Purchase updated successfully!'); 
+        toast.success('Purchase updated successfully!'); 
       } else {
         await purchaseApi.createPurchase(payload);
-        alert('Purchase created successfully!'); 
+        toast.success('Purchase created successfully!'); 
       }
       
       setIsFormOpen(false);
       setEditingId(null);
     } catch (err) {
-      alert('Error saving purchase. Please check mandatory fields.');
+      toast.error('Error saving purchase. Please check mandatory fields.');
       console.error(err);
     }
   };
@@ -120,6 +162,25 @@ export const PurchasesPage: React.FC = () => {
       
       setEditingId(id);
       setInvoiceNo(purchase.invoice_no || '');
+      setInvoiceDate(purchase.invoice_date || '');
+      setVehicleNo(purchase.vehicle_no || '');
+      setOrderNo(purchase.order_no || '');
+      setOrderDate(purchase.order_date || '');
+      setLrNo(purchase.lr_no || '');
+      setLrDate(purchase.lr_date || '');
+      setDespFrom(purchase.desp_from || '');
+      setDespTo(purchase.desp_to || '');
+      setBookName(purchase.book_name || '');
+      setEwayBillNo(purchase.eway_bill_no || '');
+      setBillDate(purchase.bill_date || '');
+      setTransport(purchase.transport || '');
+      setPayment(purchase.payment || '');
+      setLrWeight(purchase.lr_weight || '0');
+      setRcmPurchase(purchase.rcm_purchase || 'NO');
+      setFreight(purchase.freight || '');
+      setLoading(purchase.loading_additional || '');
+      setDiscountData({type: 'PERCENT', value: purchase.discount_percentage || ''});
+      setTdsData({type: 'PERCENT', value: purchase.tds_percentage || ''});
       setPartyId(purchase.party_id || '');
       
       if (purchase.items && purchase.items.length > 0) {
@@ -131,7 +192,7 @@ export const PurchasesPage: React.FC = () => {
       setIsFormOpen(true);
     } catch (err) {
       console.error(err);
-      alert('Error fetching purchase details');
+      toast.error('Error fetching purchase details');
     }
   };
 
@@ -142,7 +203,7 @@ export const PurchasesPage: React.FC = () => {
         setPurchases(purchases.filter(p => p.id !== id));
       } catch (err) {
         console.error(err);
-        alert('Error deleting purchase');
+        toast.error('Error deleting purchase');
       }
     }
   };
@@ -150,6 +211,25 @@ export const PurchasesPage: React.FC = () => {
   const handleNewEntry = () => {
     setEditingId(null);
     setInvoiceNo('');
+    setInvoiceDate(new Date().toISOString().split('T')[0]);
+    setVehicleNo('');
+    setOrderNo('');
+    setOrderDate('');
+    setLrNo('');
+    setLrDate('');
+    setDespFrom('');
+    setDespTo('');
+    setBookName('');
+    setEwayBillNo('');
+    setBillDate(new Date().toISOString().split('T')[0]);
+    setTransport('');
+    setPayment('45 Days');
+    setLrWeight('0');
+    setRcmPurchase('NO');
+    setFreight('');
+    setLoading('');
+    setDiscountData({type: 'PERCENT', value: ''});
+    setTdsData({type: 'PERCENT', value: ''});
     setPartyId('');
     setItems([{ id: Date.now(), item_name: '', nos: 0, quantity: 0, rate: 0, amount: 0 }]);
     setIsFormOpen(true);
@@ -160,16 +240,25 @@ export const PurchasesPage: React.FC = () => {
       <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 mb-6">
           <div>
-            <h1 className="text-[18px] font-black text-[#1E293B] tracking-tight uppercase">Purchase Entries</h1>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Manage all purchase bills</p>
+            <h1 className="text-[18px] font-black text-[#1E293B] tracking-tight uppercase">PURCHASE ENTRY LIST</h1>
+            <p className="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Manage Purchase Invoices</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search entries..." className="w-[250px] bg-slate-50 border border-slate-200 focus:border-[#4338CA] focus:bg-white rounded-xl pl-9 pr-4 py-2.5 text-[13px] outline-none transition-all" />
+              <input type="text" placeholder="Search Invoice..." className="w-[200px] bg-slate-50 border border-slate-200 focus:border-[#1E293B] focus:bg-white rounded-xl pl-9 pr-4 py-2 text-[12px] font-medium outline-none transition-all" />
             </div>
-            <button onClick={handleNewEntry} className="bg-[#4338CA] hover:bg-[#3730A3] text-white px-5 py-2.5 rounded-xl text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm shadow-indigo-500/20 transition-all">
-              <Plus className="w-4 h-4" /> New Entry
+            <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+              <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+            </button>
+            <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+              <FileText className="w-3.5 h-3.5" /> PDF
+            </button>
+            <button className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+              <Upload className="w-3.5 h-3.5" /> Import
+            </button>
+            <button onClick={handleNewEntry} className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+              <Plus className="w-4 h-4" /> Add New
             </button>
           </div>
         </div>
@@ -181,33 +270,48 @@ export const PurchasesPage: React.FC = () => {
                 <Search className="w-8 h-8 text-slate-300" />
               </div>
               <h3 className="text-[15px] font-black text-slate-700 uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-slate-500 mt-1 max-w-sm">You haven't recorded any entries yet. Click "New Entry" to get started.</p>
+              <p className="text-[13px] text-slate-500 mt-1 max-w-sm">You haven't recorded any entries yet. Click "Add New" to get started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-[12px]">
-                <thead className="bg-[#F8F9FC] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/60">
+              <table className="w-full text-left text-[11px] font-bold">
+                <thead className="bg-[#F8F9FC] text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
                   <tr>
-                    <th className="py-3 px-4">Purchase No</th>
-                    <th className="py-3 px-4">Invoice No</th>
-                    <th className="py-3 px-4">Party ID</th>
-                    <th className="py-3 px-4">Total Taxable</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-slate-300" /></th>
+                    <th className="py-4 px-4">DATE</th>
+                    <th className="py-4 px-4">INVOICE NO</th>
+                    <th className="py-4 px-4">PARTY</th>
+                    <th className="py-4 px-4 text-right">GRAND TOTAL</th>
+                    <th className="py-4 px-4 text-center">GRN ENTRY</th>
+                    <th className="py-4 px-4 text-center">ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {purchases.map((purchase) => (
+                  {purchases.map((purchase) => {
+                    const partyName = Array.isArray(parties) ? (parties.find(p => p.id === purchase.party_id)?.name || parties.find(p => p.id === purchase.party_id)?.account_name || purchase.party_id) : purchase.party_id;
+                    const dateStr = purchase.invoice_date ? new Date(purchase.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
+                    return (
                     <tr key={purchase.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="py-3 px-4 font-medium text-[#1E293B]">{purchase.purchase_no || '-'}</td>
-                      <td className="py-3 px-4 text-slate-600">{purchase.invoice_no || '-'}</td>
-                      <td className="py-3 px-4 text-slate-600">{purchase.party_id || '-'}</td>
-                      <td className="py-3 px-4 font-bold text-slate-700">₹ {purchase.total_taxable || '0.00'}</td>
-                      <td className="py-3 px-4 text-right">
-                        <button onClick={() => handleEdit(purchase.id)} className="text-[#4338CA] hover:text-[#3730A3] font-bold mr-3 transition-colors uppercase text-[11px] tracking-wider">Edit</button>
-                        <button onClick={() => handleDelete(purchase.id)} className="text-red-500 hover:text-red-700 font-bold transition-colors uppercase text-[11px] tracking-wider">Delete</button>
+                      <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-slate-300" /></td>
+                      <td className="py-4 px-4 text-slate-500">{dateStr}</td>
+                      <td className="py-4 px-4 text-[#1E293B]">{purchase.invoice_no || '-'}</td>
+                      <td className="py-4 px-4 text-[#1E293B] uppercase">{partyName || '-'}</td>
+                      <td className="py-4 px-4 text-slate-700 text-right">₹ {purchase.grand_total ? Number(purchase.grand_total).toLocaleString('en-IN') : '0'}</td>
+                      <td className="py-4 px-4 text-center">
+                        <button className="bg-slate-100 text-[#1E293B] border border-slate-200 px-3 py-1.5 rounded text-[10px] uppercase font-black hover:bg-slate-200 transition-colors shadow-sm">GRN</button>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="flex justify-center items-center gap-2">
+                          <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded transition-colors"><Download className="w-3.5 h-3.5" /></button>
+                          <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded transition-colors"><FileText className="w-3.5 h-3.5" /></button>
+                          <button className="text-slate-500 hover:text-slate-600 bg-slate-100 p-1.5 rounded transition-colors"><Printer className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleEdit(purchase.id)} className="text-blue-500 hover:text-blue-600 bg-blue-50 p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleDelete(purchase.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -246,11 +350,11 @@ export const PurchasesPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Invoice Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" defaultValue="2026-09-08" />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Vehicle Number</label>
-              <input type="text" placeholder="GJ-01-XX-0000" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="GJ-01-XX-0000" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">RCM Purchase</label>
@@ -263,29 +367,29 @@ export const PurchasesPage: React.FC = () => {
             {/* Row 2 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Order No.</label>
-              <input type="text" placeholder="ORDER NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="ORDER NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Order Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR No.</label>
-              <input type="text" placeholder="LR NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="LR NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={lrNo} onChange={(e) => setLrNo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-400 transition-all outline-none" value={lrDate} onChange={(e) => setLrDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Desp From</label>
-              <input type="text" placeholder="FROM" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="FROM" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despFrom} onChange={(e) => setDespFrom(e.target.value)} />
             </div>
 
             {/* Row 3 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Desp To</label>
-              <input type="text" placeholder="TO" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="TO" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={despTo} onChange={(e) => setDespTo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Party Name</label>
@@ -307,13 +411,13 @@ export const PurchasesPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">E-Way Bill No.</label>
-              <input type="text" placeholder="E-WAY BILL NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" placeholder="E-WAY BILL NO." className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" value={ewayBillNo} onChange={(e) => setEwayBillNo(e.target.value)} />
             </div>
 
             {/* Row 4 */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bill Date</label>
-              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" defaultValue="2026-09-08" />
+              <input type="date" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={billDate} onChange={(e) => setBillDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Select Transport</label>
@@ -328,11 +432,11 @@ export const PurchasesPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Payment</label>
-              <input type="text" defaultValue="45 Days" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" />
+              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={payment} onChange={(e) => setPayment(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">LR Weight</label>
-              <input type="text" defaultValue="0" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" />
+              <input type="text" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" value={lrWeight} onChange={(e) => setLrWeight(e.target.value)} />
             </div>
           </div>
 
