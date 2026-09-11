@@ -34,7 +34,7 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
         {resolvedFields.map((field) => (
           <div key={field.name} className={`flex flex-col gap-1.5 ${field.type === 'checkbox' ? 'sm:col-span-2 flex-row items-center gap-3' : ''}`}>
             {field.type !== 'checkbox' && (
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-text-secondary">
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </label>
             )}
@@ -46,7 +46,7 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
                   required: field.required,
                   onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
                 })}
-                className={`w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors ${field.disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white'}`}
+                className={`w-full p-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${field.disabled ? 'bg-background text-text-secondary cursor-not-allowed' : 'bg-surface'}`}
               >
                 <option value="">Select {field.label}</option>
                 {field.options?.map(opt => (
@@ -62,9 +62,9 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
                     required: field.required,
                     onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
                   })}
-                  className={`w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/20 ${field.disabled ? 'cursor-not-allowed' : ''}`}
+                  className={`w-4 h-4 rounded border-border text-primary focus:ring-primary/20 ${field.disabled ? 'cursor-not-allowed' : ''}`}
                 />
-                <span className={`text-sm font-medium ${field.disabled ? 'text-slate-400' : 'text-slate-700'}`}>{field.label}</span>
+                <span className={`text-sm font-medium ${field.disabled ? 'text-text-muted' : 'text-text-secondary'}`}>{field.label}</span>
               </label>
             ) : (
               <input
@@ -75,7 +75,7 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
                   required: field.required,
                   onChange: field.onChange ? (e) => field.onChange!(e, setValue) : undefined
                 })}
-                className={`w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors ${field.disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white'}`}
+                className={`w-full p-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${field.disabled ? 'bg-background text-text-secondary cursor-not-allowed' : 'bg-surface'}`}
               />
             )}
 
@@ -86,7 +86,7 @@ export function DynamicForm({ fields, onSubmit, onCancel, submitLabel = 'Save', 
         ))}
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/50">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel

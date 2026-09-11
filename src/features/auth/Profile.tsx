@@ -140,32 +140,32 @@ export const ProfilePage: React.FC = () => {
       <div className="flex items-start gap-4">
         <button 
           onClick={() => navigate(-1)} 
-          className="mt-1 p-2 hover:bg-[#eaf2f9] rounded-full transition-colors shrink-0 text-[#376fa9]"
+          className="mt-1 p-2 hover:bg-surface-soft rounded-full transition-colors shrink-0 text-primary"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <p className="text-[10px] font-bold text-[#688099] tracking-wider uppercase mb-1">Live Company Workspace</p>
-          <h1 className="text-3xl font-bold text-[#132f50]">Welcome, {user?.first_name || user?.username}</h1>
-          <p className="text-sm text-[#688099] mt-1">This information is loaded directly from your First Computer ERP account.</p>
+          <p className="text-[10px] font-bold text-text-secondary tracking-wider uppercase mb-1">Live Company Workspace</p>
+          <h1 className="text-3xl font-bold text-text-primary">Welcome, {user?.first_name || user?.username}</h1>
+          <p className="text-sm text-text-secondary mt-1">This information is loaded directly from your First Computer ERP account.</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-6 border-b border-[#e3ebf2]">
+      <div className="flex space-x-6 border-b border-border">
         <button
           onClick={() => setActiveTab('workspace')}
-          className={`pb-3 text-sm font-medium transition-colors relative ${activeTab === 'workspace' ? 'text-[#376fa9]' : 'text-[#688099] hover:text-[#1c3a59]'}`}
+          className={`pb-3 text-sm font-medium transition-colors relative ${activeTab === 'workspace' ? 'text-primary' : 'text-text-secondary hover:text-text-primary'}`}
         >
           Workspace Overview
-          {activeTab === 'workspace' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#376fa9] rounded-t-full" />}
+          {activeTab === 'workspace' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`pb-3 text-sm font-medium transition-colors relative ${activeTab === 'settings' ? 'text-[#376fa9]' : 'text-[#688099] hover:text-[#1c3a59]'}`}
+          className={`pb-3 text-sm font-medium transition-colors relative ${activeTab === 'settings' ? 'text-primary' : 'text-text-secondary hover:text-text-primary'}`}
         >
           Account Settings
-          {activeTab === 'settings' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#376fa9] rounded-t-full" />}
+          {activeTab === 'settings' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
         </button>
       </div>
 
@@ -174,42 +174,42 @@ export const ProfilePage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-6">
             
             {/* Active Company */}
-            <div className="md:col-span-2 bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm flex flex-col justify-between">
+            <div className="md:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-sm flex flex-col justify-between">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-xl bg-[#eaf2f9] flex items-center justify-center text-[#376fa9] shrink-0">
+                <div className="h-12 w-12 rounded-xl bg-surface-soft flex items-center justify-center text-primary shrink-0">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Active Company</p>
-                  <h3 className="text-xl font-bold text-[#132f50]">{company?.name || 'Not provided'}</h3>
-                  <p className="text-sm text-[#688099]">Active account</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Active Company</p>
+                  <h3 className="text-xl font-bold text-text-primary">{company?.name || 'Not provided'}</h3>
+                  <p className="text-sm text-text-secondary">Active account</p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-[#f4f7fb]">
+              <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-border">
                 <div>
-                  <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">GSTIN</p>
-                  <p className="text-sm font-medium text-[#132f50]">{company?.gstin || 'Not provided'}</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">GSTIN</p>
+                  <p className="text-sm font-medium text-text-primary">{company?.gstin || 'Not provided'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Bank Name</p>
-                  <p className="text-sm font-medium text-[#132f50]">{company?.bank_name || 'Not provided'}</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Bank Name</p>
+                  <p className="text-sm font-medium text-text-primary">{company?.bank_name || 'Not provided'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Account No</p>
-                  <p className="text-sm font-medium text-[#132f50]">{company?.account_no || 'Not provided'}</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Account No</p>
+                  <p className="text-sm font-medium text-text-primary">{company?.account_no || 'Not provided'}</p>
                 </div>
               </div>
             </div>
 
             {/* Company Users */}
-            <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm flex flex-col justify-between">
-              <div className="h-10 w-10 rounded-xl bg-[#eef7f2] flex items-center justify-center text-[#238b55] mb-4">
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-sm flex flex-col justify-between">
+              <div className="h-10 w-10 rounded-xl bg-success-bg flex items-center justify-center text-success mb-4">
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-[#688099] uppercase tracking-wider mb-1">Company Users</p>
-                <p className="text-4xl font-bold text-[#132f50] mb-2">{workspace?.total_users || 0}</p>
-                <p className="text-xs text-[#688099]">Only showing current session</p>
+                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Company Users</p>
+                <p className="text-4xl font-bold text-text-primary mb-2">{workspace?.total_users || 0}</p>
+                <p className="text-xs text-text-secondary">Only showing current session</p>
               </div>
             </div>
 
@@ -218,34 +218,34 @@ export const ProfilePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             
             {/* Company Contact Details */}
-            <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm">
-              <h3 className="text-base font-bold text-[#132f50] mb-6">Company contact details</h3>
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-sm">
+              <h3 className="text-base font-bold text-text-primary mb-6">Company contact details</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-[#688099]" />
-                  <span className="text-sm text-[#48647f]">{company?.email || 'Not provided'}</span>
+                  <Mail className="h-4 w-4 text-text-secondary" />
+                  <span className="text-sm text-text-secondary">{company?.email || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-[#688099]" />
-                  <span className="text-sm text-[#48647f]">{company?.phone || 'Not provided'}</span>
+                  <Phone className="h-4 w-4 text-text-secondary" />
+                  <span className="text-sm text-text-secondary">{company?.phone || 'Not provided'}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-4 w-4 text-[#688099] shrink-0 mt-0.5" />
-                  <span className="text-sm text-[#48647f]">{company?.address || 'Not provided'}</span>
+                  <MapPin className="h-4 w-4 text-text-secondary shrink-0 mt-0.5" />
+                  <span className="text-sm text-text-secondary">{company?.address || 'Not provided'}</span>
                 </div>
               </div>
             </div>
 
             {/* Your Access */}
-            <div className="bg-white rounded-2xl border border-[#e3ebf2] p-6 shadow-sm">
-              <h3 className="text-base font-bold text-[#132f50] mb-6">Your access</h3>
-              <div className="flex items-center gap-4 bg-[#f8fafc] p-4 rounded-xl border border-[#e3ebf2]">
-                <div className="h-10 w-10 rounded-xl bg-[#eaf2f9] flex items-center justify-center text-[#376fa9]">
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-sm">
+              <h3 className="text-base font-bold text-text-primary mb-6">Your access</h3>
+              <div className="flex items-center gap-4 bg-surface-soft p-4 rounded-xl border border-border">
+                <div className="h-10 w-10 rounded-xl bg-surface-soft flex items-center justify-center text-primary">
                   <Shield className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[#132f50]">{user?.role_name || user?.role}</p>
-                  <p className="text-xs text-[#688099]">{user?.email}</p>
+                  <p className="text-sm font-medium text-text-primary">{user?.role_name || user?.role}</p>
+                  <p className="text-xs text-text-secondary">{user?.email}</p>
                 </div>
               </div>
             </div>
@@ -253,14 +253,14 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           {/* Team Members Table */}
-          <div className="bg-white rounded-2xl border border-[#e3ebf2] shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#e3ebf2]">
-              <h3 className="text-base font-bold text-[#132f50]">Team members</h3>
-              <p className="text-xs text-[#688099] mt-1">Currently active session.</p>
+          <div className="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-border">
+              <h3 className="text-base font-bold text-text-primary">Team members</h3>
+              <p className="text-xs text-text-secondary mt-1">Currently active session.</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-[#48647f]">
-                <thead className="bg-[#f8fafc] text-[10px] font-bold text-[#688099] uppercase tracking-wider">
+              <table className="w-full text-left text-sm text-text-secondary">
+                <thead className="bg-surface-soft text-[10px] font-bold text-text-secondary uppercase tracking-wider">
                   <tr>
                     <th className="px-6 py-4">NAME</th>
                     <th className="px-6 py-4">EMAIL</th>
@@ -268,20 +268,20 @@ export const ProfilePage: React.FC = () => {
                     <th className="px-6 py-4">STATUS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#e3ebf2]">
+                <tbody className="divide-y divide-border">
                   {workspace?.team_members?.map((member) => (
-                    <tr key={member.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-[#132f50]">
+                    <tr key={member.id} className="hover:bg-input transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-text-primary">
                         {member.name || member.username}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#688099]">
+                      <td className="px-6 py-4 whitespace-nowrap text-text-secondary">
                         {member.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#688099]">
+                      <td className="px-6 py-4 whitespace-nowrap text-text-secondary">
                         {member.role_name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#238b55]">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success">
                           <CheckCircle2 className="h-3 w-3" />
                           {member.status}
                         </span>
@@ -290,7 +290,7 @@ export const ProfilePage: React.FC = () => {
                   ))}
                   {(!workspace?.team_members || workspace.team_members.length === 0) && (
                     <tr>
-                      <td colSpan={4} className="px-6 py-8 text-center text-[#688099]">
+                      <td colSpan={4} className="px-6 py-8 text-center text-text-secondary">
                         No team members found.
                       </td>
                     </tr>
@@ -307,67 +307,67 @@ export const ProfilePage: React.FC = () => {
         <div className="space-y-8">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Profile Settings Card */}
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+            <div className="bg-surface rounded-3xl border border-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
               <div className="px-8 py-6 flex items-center gap-4 bg-gradient-to-r from-blue-50/50 to-transparent">
-                <div className="h-12 w-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
+                <div className="h-12 w-12 rounded-2xl bg-primary-light text-primary flex items-center justify-center shadow-sm">
                   <User className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800">Personal Information</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Update your personal details here.</p>
+                  <h2 className="text-lg font-bold text-text-primary">Personal Information</h2>
+                  <p className="text-xs text-text-secondary mt-0.5">Update your personal details here.</p>
                 </div>
               </div>
               
               <form onSubmit={onProfileSubmit} className="p-8 pt-4 space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">First Name</label>
+                    <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">First Name</label>
                     <input
                       type="text"
                       name="first_name"
                       value={formData.first_name}
                       onChange={handleProfileChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Last Name</label>
+                    <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Last Name</label>
                     <input
                       type="text"
                       name="last_name"
                       value={formData.last_name}
                       onChange={handleProfileChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Email Address</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleProfileChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Phone Number</label>
                   <input
                     type="text"
                     name="phone_number"
                     value={formData.phone_number}
                     onChange={handleProfileChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                   />
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" isLoading={updateProfile.isPending} className="w-full rounded-xl py-2.5 shadow-md shadow-blue-500/20">
+                  <Button type="submit" isLoading={updateProfile.isPending} className="w-full rounded-xl py-2.5 shadow-md shadow-primary/20">
                     Save Changes
                   </Button>
                 </div>
@@ -375,50 +375,50 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             {/* Security Settings Card */}
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] h-fit">
-              <div className="px-8 py-6 flex items-center gap-4 bg-gradient-to-r from-red-50/50 to-transparent">
-                <div className="h-12 w-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shadow-sm">
+            <div className="bg-surface rounded-3xl border border-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] h-fit">
+              <div className="px-8 py-6 flex items-center gap-4 bg-gradient-to-r from-danger/5 to-transparent">
+                <div className="h-12 w-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center shadow-sm">
                   <Shield className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800">Security</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Manage your password.</p>
+                  <h2 className="text-lg font-bold text-text-primary">Security</h2>
+                  <p className="text-xs text-text-secondary mt-0.5">Manage your password.</p>
                 </div>
               </div>
               
               <form onSubmit={onPasswordSubmit} className="p-8 pt-4 space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Current Password</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Current Password</label>
                   <input
                     type="password"
                     name="old_password"
                     value={passwordData.old_password}
                     onChange={handlePasswordChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-danger focus:ring-4 focus:ring-danger/20 transition-all outline-none"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">New Password</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">New Password</label>
                   <input
                     type="password"
                     name="new_password"
                     value={passwordData.new_password}
                     onChange={handlePasswordChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-danger focus:ring-4 focus:ring-danger/20 transition-all outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Confirm New Password</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Confirm New Password</label>
                   <input
                     type="password"
                     name="confirm_password"
                     value={passwordData.confirm_password}
                     onChange={handlePasswordChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-danger focus:ring-4 focus:ring-danger/20 transition-all outline-none"
                     required
                   />
                 </div>
@@ -433,144 +433,144 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           {/* Company Settings Card */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-            <div className="px-8 py-6 flex items-center gap-4 bg-gradient-to-r from-indigo-50/50 to-transparent">
-              <div className="h-12 w-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+          <div className="bg-surface rounded-3xl border border-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+            <div className="px-8 py-6 flex items-center gap-4 bg-gradient-to-r from-primary/5 to-transparent">
+              <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-800">Company Information</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Update your business details.</p>
+                <h2 className="text-lg font-bold text-text-primary">Company Information</h2>
+                <p className="text-xs text-text-secondary mt-0.5">Update your business details.</p>
               </div>
             </div>
             
             <form onSubmit={onProfileSubmit} className="p-8 pt-4 space-y-5">
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Company Name</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Company Name</label>
                   <input
                     type="text"
                     name="name"
                     value={companyData.name}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">GSTIN</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">GSTIN</label>
                   <input
                     type="text"
                     name="gstin"
                     value={companyData.gstin}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bank Name</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Bank Name</label>
                   <input
                     type="text"
                     name="bank_name"
                     value={companyData.bank_name}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Account No</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Account No</label>
                   <input
                     type="text"
                     name="account_no"
                     value={companyData.account_no}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">IFSC Code</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">IFSC Code</label>
                   <input
                     type="text"
                     name="ifsc_code"
                     value={companyData.ifsc_code}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Company Email</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Company Email</label>
                   <input
                     type="email"
                     name="email"
                     value={companyData.email}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Company Phone</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Company Phone</label>
                   <input
                     type="text"
                     name="phone"
                     value={companyData.phone}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Full Address</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Full Address</label>
                 <input
                   type="text"
                   name="address"
                   value={companyData.address}
                   onChange={handleCompanyChange}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">City</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">City</label>
                   <input
                     type="text"
                     name="city"
                     value={companyData.city}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">State</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">State</label>
                   <input
                     type="text"
                     name="state"
                     value={companyData.state}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">PIN Code</label>
+                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">PIN Code</label>
                   <input
                     type="text"
                     name="pin_code"
                     value={companyData.pin_code}
                     onChange={handleCompanyChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-input/50 text-sm focus:bg-surface focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="pt-2">
-                <Button type="submit" isLoading={updateProfile.isPending} className="w-full rounded-xl py-2.5 shadow-md shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700">
+                <Button type="submit" isLoading={updateProfile.isPending} className="w-full rounded-xl py-2.5 shadow-md shadow-primary/20 bg-primary hover:bg-primary-hover">
                   Save Company Details
                 </Button>
               </div>

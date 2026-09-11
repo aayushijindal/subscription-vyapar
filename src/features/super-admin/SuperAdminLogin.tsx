@@ -38,51 +38,51 @@ export const SuperAdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F7FB] flex items-center justify-center p-4">
-      <div className="w-full max-w-[440px] bg-[#FFFFFF] rounded-[24px] shadow-[0_8px_30px_rgba(40,45,70,0.06)] border border-[#E8EAF1] overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-[440px] bg-surface rounded-[24px] shadow-[0_8px_30px_rgba(40,45,70,0.06)] border border-border overflow-hidden">
         <div className="p-10">
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-16 h-16 rounded-[16px] bg-[#F0EEFF] flex items-center justify-center mb-4">
-              <Shield className="w-8 h-8 text-[#6C63D9]" />
+            <div className="w-16 h-16 rounded-[16px] bg-primary/10 flex items-center justify-center mb-4">
+              <Shield className="w-8 h-8 text-primary" />
             </div>
-            <h1 className="text-[24px] font-bold text-[#25283A] tracking-tight">Super Admin Login</h1>
-            <p className="text-[14px] text-[#687085] mt-2">Access the central control panel for First Computer ERP</p>
+            <h1 className="text-[24px] font-bold text-text-primary tracking-tight">Super Admin Login</h1>
+            <p className="text-[14px] text-text-secondary mt-2">Access the central control panel for First Computer ERP</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 rounded-[10px] bg-[#FCEEEF] text-[#D96F75] text-[13px] font-medium text-center border border-[#F9D6D8]">
+              <div className="p-3 rounded-[10px] bg-danger/10 text-danger text-[13px] font-medium text-center border border-danger/20">
                 {error}
               </div>
             )}
             
             <div className="space-y-1.5">
-              <label className="text-[13px] font-semibold text-[#25283A]">Username</label>
+              <label className="text-[13px] font-semibold text-text-primary">Username</label>
               <input 
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full bg-[#FFFFFF] border border-[#DFE3EC] text-[14px] text-[#25283A] rounded-[10px] p-3 outline-none focus:border-[#8B83E5] focus:ring-2 focus:ring-[#8B83E5]/20 transition-all placeholder:text-[#9299AA]"
+                className="w-full bg-surface border border-border text-[14px] text-text-primary rounded-[10px] p-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-text-muted"
                 placeholder="admin"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[13px] font-semibold text-[#25283A]">Password</label>
+              <label className="text-[13px] font-semibold text-text-primary">Password</label>
               <div className="relative">
                 <input 
                   type={showPassword ? "text" : "password"} 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-[#FFFFFF] border border-[#DFE3EC] text-[14px] text-[#25283A] rounded-[10px] py-3 pl-3 pr-10 outline-none focus:border-[#8B83E5] focus:ring-2 focus:ring-[#8B83E5]/20 transition-all placeholder:text-[#9299AA]"
+                  className="w-full bg-surface border border-border text-[14px] text-text-primary rounded-[10px] py-3 pl-3 pr-10 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-text-muted"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9299AA] hover:text-[#687085] focus:outline-none transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary focus:outline-none transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -96,14 +96,14 @@ export const SuperAdminLogin: React.FC = () => {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-[#6C63D9] hover:bg-[#5E56B7] disabled:opacity-50 text-white rounded-[10px] py-3.5 text-[14px] font-bold transition-colors mt-2 flex justify-center items-center gap-2"
+              className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white rounded-[10px] py-3.5 text-[14px] font-bold transition-colors mt-2 flex justify-center items-center gap-2"
             >
               {isLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> Authenticating...</> : 'Sign In'}
             </button>
           </form>
         </div>
-        <div className="bg-[#F8F9FC] border-t border-[#E8EAF1] p-5 text-center">
-          <p className="text-[12px] font-medium text-[#9299AA]">
+        <div className="bg-background border-t border-border p-5 text-center">
+          <p className="text-[12px] font-medium text-text-muted">
             Protected Area. Only authorized personnel may login.
           </p>
         </div>

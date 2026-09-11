@@ -50,10 +50,10 @@ export const SubscriptionSettings: React.FC = () => {
 
   return (
     <div className="space-y-8 text-left">
-      <div className="flex justify-between items-center border-b border-slate-200 pb-5">
+      <div className="flex justify-between items-center border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-sans">Subscription & Invoices</h1>
-          <p className="text-sm text-slate-500 mt-1">Review active subscriptions, download invoices, or upgrade plans.</p>
+          <h1 className="text-2xl font-bold text-text-primary font-sans">Subscription & Invoices</h1>
+          <p className="text-sm text-text-secondary mt-1">Review active subscriptions, download invoices, or upgrade plans.</p>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export const SubscriptionSettings: React.FC = () => {
         <button 
           onClick={() => setActiveTab('plan')}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'plan' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            activeTab === 'plan' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-background'
           }`}
         >
           Active Plan
@@ -70,7 +70,7 @@ export const SubscriptionSettings: React.FC = () => {
         <button 
           onClick={() => setActiveTab('invoices')}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'invoices' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            activeTab === 'invoices' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-background'
           }`}
         >
           Invoice History
@@ -86,27 +86,27 @@ export const SubscriptionSettings: React.FC = () => {
               <Card 
                 key={p.id}
                 className={`flex flex-col justify-between border relative ${
-                  isCurrent ? 'border-blue-500 ring-2 ring-blue-500/10 bg-blue-50/10' : 'border-slate-200'
+                  isCurrent ? 'border-primary ring-2 ring-primary/10 bg-primary-light/10' : 'border-border'
                 }`}
               >
                 {p.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                     Recommended Upgrade
                   </span>
                 )}
                 
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-lg text-slate-900">{p.name}</h3>
+                    <h3 className="font-bold text-lg text-text-primary">{p.name}</h3>
                     {isCurrent && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-light text-primary-hover text-xs font-semibold">
                         <Check className="h-3.5 w-3.5" /> Current
                       </span>
                     )}
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-slate-900">{p.price}</span>
-                    <span className="text-slate-400 text-xs">{p.billing}</span>
+                    <span className="text-3xl font-bold text-text-primary">{p.price}</span>
+                    <span className="text-text-muted text-xs">{p.billing}</span>
                   </div>
                 </div>
 

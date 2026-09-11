@@ -14,13 +14,13 @@ export const ToastContainer: React.FC = () => {
           const icons: Record<'success' | 'error' | 'info', React.ReactNode> = {
             success: <CheckCircle2 className="h-5 w-5 text-green-600" />,
             error: <XCircle className="h-5 w-5 text-red-600" />,
-            info: <Info className="h-5 w-5 text-blue-600" />
+            info: <Info className="h-5 w-5 text-primary" />
           };
 
           const backgrounds: Record<'success' | 'error' | 'info', string> = {
             success: 'bg-green-50 border-green-100',
             error: 'bg-red-50 border-red-100',
-            info: 'bg-blue-50 border-blue-100'
+            info: 'bg-primary-light border-primary/20'
           };
 
           return (
@@ -33,8 +33,8 @@ export const ToastContainer: React.FC = () => {
             >
               <div className="mt-0.5">{icons[toast.type]}</div>
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-slate-900">{toast.title}</h4>
-                {toast.message && <p className="text-xs text-slate-500 mt-0.5">{toast.message}</p>}
+                <h4 className="text-sm font-semibold text-text-primary">{toast.title}</h4>
+                {toast.message && <p className="text-xs text-text-secondary mt-0.5">{toast.message}</p>}
               </div>
             </motion.div>
           );

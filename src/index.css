@@ -1,30 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6C63D9;
-  --color-primary-hover: #5B52B8;
-  --color-success: #42A77A;
-  --color-success-bg: #EAF7F1;
-  --color-warning: #D99A3D;
-  --color-warning-bg: #FFF6E6;
-  --color-danger: #D96F75;
-  --color-danger-bg: #FCEEEF;
+  /* Brand */
+  --color-primary: #FF6B21;
+  --color-primary-hover: #E85A16;
+  --color-primary-active: #C9470F;
   
-  --color-background: #F6F7FB;
-  --color-surface: #F9FAFD;
-  --color-card: #FFFFFF;
-  --color-border-subtle: #E8EAF1;
+  /* Charcoal / Dark (Deepest) */
+  --color-dark: #171F27;
   
-  --color-text-primary: #25283A;
-  --color-text-secondary: #687085;
-  --color-text-muted: #9299AA;
-  
-  --color-accent-blue: #5B8DEF;
-  --color-accent-blue-bg: #EEF4FF;
-  --color-accent-lavender: #6C63D9;
-  --color-accent-lavender-bg: #F0EEFF;
+  /* Main Background */
+  --color-background: #1F2933;
 
-  --shadow-premium: 0 4px 18px rgba(40,45,70,0.04);
+  /* Surfaces & Backgrounds */
+  --color-surface: #27323C;
+  --color-surface-soft: #303C47;
+  
+  /* Inputs */
+  --color-input: #222D37;
+  --color-input-border: #3A4651;
+
+  /* Typography */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #AEB8C2;
+  --color-text-muted: #7F8B96;
+  --color-text-disabled: #5E6974;
+
+  /* Lines */
+  --color-border: #37424D;
+  --color-border-hover: #303C47;
+
+  /* Utility status */
+  --color-success: #22C55E;
+  --color-success-bg: rgba(34,197,94,0.12);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245,158,11,0.12);
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239,68,68,0.12);
+  --color-info: #3B82F6;
+  --color-info-bg: rgba(59,130,246,0.12);
+
+  --shadow-premium: 0 8px 30px rgba(0,0,0,0.20);
 }
 
 @layer base {
@@ -84,16 +100,16 @@ body {
 }
 
 .premium-input {
-  background: var(--color-card);
-  border: 1px solid #DFE3EC;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   transition: all 0.2s;
 }
 
 .premium-input:focus {
-  border-color: #8B83E5;
+  border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(139, 131, 229, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 107, 33, 0.2);
 }
 
 @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }

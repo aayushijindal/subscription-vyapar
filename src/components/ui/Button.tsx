@@ -12,11 +12,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const sizes = 'px-4 py-2.5 text-sm';
     
     const variants = {
-      primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm focus:ring-blue-500',
-      secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 focus:ring-slate-500',
-      outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-blue-500',
-      danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm focus:ring-red-500',
-      ghost: 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 focus:ring-slate-500'
+      primary: 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white shadow-sm focus:ring-primary',
+      secondary: 'bg-surface hover:bg-surface-soft text-text-primary border border-border focus:ring-primary/20',
+      outline: 'border border-border hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-primary',
+      danger: 'bg-danger hover:bg-danger/90 text-white shadow-sm focus:ring-danger',
+      ghost: 'hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-primary/20'
     };
 
     return (

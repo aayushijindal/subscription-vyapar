@@ -146,31 +146,31 @@ export const SalesReturnsPage: React.FC = () => {
 
   if (!isFormOpen) {
     return (
-      <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 mb-6">
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface rounded-2xl shadow-sm border border-border/60 p-5 mb-6">
           <div>
-            <h1 className="text-[20px] font-black text-[#12213b] tracking-tight uppercase">SALES RETURN LIST</h1>
-            <p className="text-[11px] font-bold text-[#526b88] uppercase mt-0.5 tracking-wider">Manage Returns</p>
+            <h1 className="text-[20px] font-black text-text-primary tracking-tight uppercase">SALES RETURN LIST</h1>
+            <p className="text-[11px] font-bold text-text-secondary uppercase mt-0.5 tracking-wider">Manage Returns</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search Invoice..." className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#2b5f9d]" />
+              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input type="text" placeholder="Search Invoice..." className="pl-9 pr-4 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:border-primary" />
             </div>
-            <button className="bg-[#142b4a] hover:bg-[#0f1f38] text-white px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+            <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                <Download className="w-4 h-4" /> Import Excel
             </button>
-            <button onClick={handleNew} className="bg-[#142b4a] hover:bg-[#0f1f38] text-white px-5 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+            <button onClick={handleNew} className="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
               <Plus className="w-4 h-4" /> Add New
             </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-x-auto">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-x-auto">
           <table className="w-full text-left text-[12px] font-bold">
-            <thead className="bg-[#F8F9FC] text-[#526b88] uppercase tracking-wider border-b border-slate-200/60">
+            <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
               <tr>
-                <th className="py-4 px-5 w-[40px] text-center"><input type="checkbox" className="rounded border-slate-300" /></th>
+                <th className="py-4 px-5 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
                 <th className="py-4 px-5">DATE</th>
                 <th className="py-4 px-5">INVOICE NO</th>
                 <th className="py-4 px-5">BUYER</th>
@@ -178,25 +178,25 @@ export const SalesReturnsPage: React.FC = () => {
                 <th className="py-4 px-5 text-center">ACTIONS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {returns.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500 font-medium">No sales returns found.</td>
+                  <td colSpan={6} className="py-12 text-center text-text-secondary font-medium">No sales returns found.</td>
                 </tr>
               ) : returns.map((ret) => {
                 const partyName = accounts.find(p => p.id === (ret.party_id || ret.buyer_id))?.name || accounts.find(p => p.id === (ret.party_id || ret.buyer_id))?.account_name || 'UNKNOWN';
                 const dateStr = ret.date || ret.invoice_date ? new Date(ret.date || ret.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
                 return (
-                  <tr key={ret.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-slate-300" /></td>
-                    <td className="py-4 px-5 text-[#526b88]">{dateStr}</td>
-                    <td className="py-4 px-5 text-[#12213b] text-[13px]">{ret.invoice_no || '--'}</td>
-                    <td className="py-4 px-5 text-[#12213b] uppercase">{partyName}</td>
-                    <td className="py-4 px-5 text-[#12213b]">₹ {Number(ret.grand_total || 0).toLocaleString()}</td>
+                  <tr key={ret.id} className="hover:bg-input/50 transition-colors">
+                    <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-border" /></td>
+                    <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
+                    <td className="py-4 px-5 text-text-primary text-[13px]">{ret.invoice_no || '--'}</td>
+                    <td className="py-4 px-5 text-text-primary uppercase">{partyName}</td>
+                    <td className="py-4 px-5 text-text-primary">₹ {Number(ret.grand_total || 0).toLocaleString()}</td>
                     <td className="py-4 px-5 text-center">
                       <div className="flex justify-center items-center gap-2">
-                        <button className="text-slate-400 hover:text-slate-600 p-1.5 rounded border border-slate-200 transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleEdit(ret.id)} className="text-blue-500 hover:text-blue-600 bg-blue-50 p-1.5 rounded border border-blue-100 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleEdit(ret.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                         <button onClick={() => handleDelete(ret.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
@@ -210,22 +210,22 @@ export const SalesReturnsPage: React.FC = () => {
     );
   }
 
-  const inputClass = "w-full bg-slate-50 border border-slate-200 focus:border-[#2b5f9d] rounded-lg p-2.5 text-[12px] text-[#12213b] transition-all outline-none";
-  const labelClass = "text-[10px] font-bold text-[#526b88] uppercase tracking-wider mb-1.5 block";
+  const inputClass = "w-full bg-input border border-border focus:border-primary rounded-lg p-2.5 text-[12px] text-text-primary transition-all outline-none";
+  const labelClass = "text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block";
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans pb-20">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans pb-20">
       
-      <div className="flex items-center justify-between mb-6 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4">
+      <div className="flex items-center justify-between mb-6 bg-surface rounded-2xl shadow-sm border border-border/60 p-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors ml-2">
+          <button onClick={() => setIsFormOpen(false)} className="text-text-muted hover:text-text-secondary transition-colors ml-2">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-[18px] font-black text-[#12213b] tracking-tight uppercase">{editingId ? 'EDIT RETURN' : 'NEW RETURN'}</h1>
+          <h1 className="text-[18px] font-black text-text-primary tracking-tight uppercase">{editingId ? 'EDIT RETURN' : 'NEW RETURN'}</h1>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 sm:p-8 mb-6">
+      <div className="bg-surface rounded-2xl shadow-sm border border-border/60 p-6 sm:p-8 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 mb-8">
           <div>
             <label className={labelClass}>INVOICE NO <span className="text-red-500">*</span></label>
@@ -244,18 +244,18 @@ export const SalesReturnsPage: React.FC = () => {
           </div>
         </div>
 
-        <hr className="border-slate-100 mb-8" />
+        <hr className="border-border/50 mb-8" />
 
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-[13px] font-black text-[#12213b] tracking-wide uppercase">ITEMS</h2>
-          <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-[#526b88] hover:text-[#2b5f9d] transition-colors bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 hover:border-[#2b5f9d]/30">
+          <h2 className="text-[13px] font-black text-text-primary tracking-wide uppercase">ITEMS</h2>
+          <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-text-secondary hover:text-primary transition-colors bg-input px-3 py-1.5 rounded-md border border-border hover:border-primary/30">
             <Plus className="w-3 h-3" /> ADD ITEM
           </button>
         </div>
 
-        <div className="border border-slate-200 rounded-xl overflow-x-auto mb-8">
+        <div className="border border-border rounded-xl overflow-x-auto mb-8">
           <table className="w-full min-w-[700px] text-left text-[12px]">
-            <thead className="bg-[#F8F9FC] text-[#526b88] font-black uppercase tracking-wider border-b border-slate-200">
+            <thead className="bg-background text-text-secondary font-black uppercase tracking-wider border-b border-border">
               <tr>
                 <th className="py-3 px-4 w-[5%] text-center rounded-tl-xl">#</th>
                 <th className="py-3 px-4 w-[45%]">ITEM NAME</th>
@@ -264,25 +264,25 @@ export const SalesReturnsPage: React.FC = () => {
                 <th className="py-3 px-4 w-[20%] text-right rounded-tr-xl">LINE TOTAL</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {items.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group relative">
-                  <td className="py-3 px-4 text-center text-slate-400 font-bold">{idx + 1}</td>
+                <tr key={item.id} className="hover:bg-input/50 transition-colors group relative">
+                  <td className="py-3 px-4 text-center text-text-muted font-bold">{idx + 1}</td>
                   <td className="py-3 px-4">
-                    <select value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className={`${inputClass} !bg-white`}>
+                    <select value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className={`${inputClass} !bg-surface`}>
                       <option value="">-- SELECT --</option>
                       {itemsList.map(i => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                     </select>
                   </td>
                   <td className="py-3 px-4">
-                    <input type="number" value={item.quantity || ''} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} className={`${inputClass} !bg-white text-center`} />
+                    <input type="number" value={item.quantity || ''} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} className={`${inputClass} !bg-surface text-center`} />
                   </td>
                   <td className="py-3 px-4">
-                    <input type="number" value={item.rate || ''} onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)} className={`${inputClass} !bg-white text-center`} />
+                    <input type="number" value={item.rate || ''} onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)} className={`${inputClass} !bg-surface text-center`} />
                   </td>
-                  <td className="py-3 px-4 text-right font-black text-[#12213b]">
+                  <td className="py-3 px-4 text-right font-black text-text-primary">
                     ₹ {(Number(item.amount) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits:2})}
-                    <button onClick={() => handleRemoveItem(item.id)} className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all p-1 bg-white border border-slate-200 rounded shadow-sm">
+                    <button onClick={() => handleRemoveItem(item.id)} className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all p-1 bg-surface border border-border rounded shadow-sm">
                       <X className="w-4 h-4" />
                     </button>
                   </td>
@@ -293,18 +293,18 @@ export const SalesReturnsPage: React.FC = () => {
         </div>
         
         {/* Simple Summary Box */}
-        <div className="bg-[#F8F9FC] border border-slate-200 rounded-xl p-5 mb-8">
-           <div className="flex justify-between items-center text-[15px] font-black text-[#12213b] uppercase tracking-wider">
+        <div className="bg-background border border-border rounded-xl p-5 mb-8">
+           <div className="flex justify-between items-center text-[15px] font-black text-text-primary uppercase tracking-wider">
               <span>NET PAYABLE</span>
               <span className="text-[20px]">₹ {netPayable.toLocaleString()}</span>
            </div>
         </div>
 
         <div className="flex items-center gap-4">
-           <button onClick={handleSubmit} className="flex-1 bg-[#142b4a] hover:bg-[#0f1f38] text-white py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm">
+           <button onClick={handleSubmit} className="flex-1 bg-primary hover:bg-primary-hover text-white py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm">
               <Save className="w-4 h-4" /> SAVE RETURN
            </button>
-           <button onClick={() => setIsFormOpen(false)} className="px-10 bg-white border border-slate-200 hover:bg-slate-50 text-[#12213b] py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm">
+           <button onClick={() => setIsFormOpen(false)} className="px-10 bg-surface border border-border hover:bg-input text-text-primary py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm">
               CANCEL
            </button>
         </div>

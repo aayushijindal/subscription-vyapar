@@ -4,16 +4,16 @@ import { ShieldCheck } from 'lucide-react';
 
 export const AuthLayout: React.FC = () => {
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-slate-50">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-input">
       {/* Left side Form Area */}
-      <div className="flex flex-col justify-center px-6 py-12 sm:px-16 lg:px-20 bg-white">
+      <div className="flex flex-col justify-center px-6 py-12 sm:px-16 lg:px-20 bg-surface">
         <div className="mx-auto w-full max-w-md">
           {/* Header/Logo */}
           <div className="flex items-center gap-2 mb-10">
-            <div className="bg-blue-600 text-white p-2 rounded-xl">
+            <div className="bg-primary text-white p-2 rounded-xl">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">First Computer ERP</span>
+            <span className="text-xl font-bold tracking-tight text-text-primary">First Computer ERP</span>
           </div>
 
           <Outlet />
@@ -21,9 +21,9 @@ export const AuthLayout: React.FC = () => {
       </div>
 
       {/* Right side Illustration/Promo */}
-      <div className="hidden lg:flex flex-col justify-between bg-blue-600 p-16 text-white relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between bg-primary p-16 text-white relative overflow-hidden">
         {/* Abstract shapes for premium graphics feel */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500 rounded-full filter blur-3xl opacity-30 -mr-40 -mt-40" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-light0 rounded-full filter blur-3xl opacity-30 -mr-40 -mt-40" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-400 rounded-full filter blur-3xl opacity-20 -ml-40 -mb-40" />
 
         <div className="relative z-10">

@@ -17,8 +17,8 @@ export const SuperAdminDashboard: React.FC = () => {
       change: 'Active: ' + (statsData?.active_companies || '0'), 
       isPositive: true, 
       icon: Building2, 
-      bg: 'bg-[#F0EEFF]', 
-      iconColor: 'text-[#6C63D9]' 
+      bg: 'bg-primary/10', 
+      iconColor: 'text-primary' 
     },
     { 
       title: 'Active Users', 
@@ -26,8 +26,8 @@ export const SuperAdminDashboard: React.FC = () => {
       change: 'Total: ' + (statsData?.total_users || '0'), 
       isPositive: true, 
       icon: Users, 
-      bg: 'bg-[#EEF4FF]', 
-      iconColor: 'text-[#5B8DEF]' 
+      bg: 'bg-primary/10', 
+      iconColor: 'text-primary' 
     },
     { 
       title: 'New Inquiries', 
@@ -35,8 +35,8 @@ export const SuperAdminDashboard: React.FC = () => {
       change: 'Requires Attention', 
       isPositive: false, 
       icon: MessageSquare, 
-      bg: 'bg-[#FFF6E6]', 
-      iconColor: 'text-[#D99A3D]' 
+      bg: 'bg-warning-bg', 
+      iconColor: 'text-warning' 
     },
     { 
       title: 'Resolved Inquiries', 
@@ -44,8 +44,8 @@ export const SuperAdminDashboard: React.FC = () => {
       change: 'Handled Successfully', 
       isPositive: true, 
       icon: CheckCircle2, 
-      bg: 'bg-[#EAF7F1]', 
-      iconColor: 'text-[#42A77A]' 
+      bg: 'bg-success-bg', 
+      iconColor: 'text-success' 
     }
   ];
 
@@ -55,12 +55,12 @@ export const SuperAdminDashboard: React.FC = () => {
       {/* Header section */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-[24px] font-bold text-[#25283A] tracking-tight">Platform Overview</h1>
-          <p className="text-[14px] text-[#687085] mt-1">Here's what's happening across the ERP platform.</p>
+          <h1 className="text-[24px] font-bold text-text-primary tracking-tight">Platform Overview</h1>
+          <p className="text-[14px] text-text-secondary mt-1">Here's what's happening across the ERP platform.</p>
         </div>
-        <div className="flex items-center gap-2.5 bg-[#F5F7FC] border border-[#E5E8F0] px-4 py-2 rounded-[10px]">
-          <Globe className="w-[18px] h-[18px] text-[#5B8DEF]" />
-          <span className="text-[13px] font-medium text-[#596176]">Global Control Center</span>
+        <div className="flex items-center gap-2.5 bg-surface-soft border border-border px-4 py-2 rounded-[10px]">
+          <Globe className="w-[18px] h-[18px] text-primary" />
+          <span className="text-[13px] font-medium text-text-secondary">Global Control Center</span>
         </div>
       </div>
 
@@ -71,11 +71,11 @@ export const SuperAdminDashboard: React.FC = () => {
           return (
             <div 
               key={index}
-              className="bg-[#FFFFFF] border border-[#E8EAF1] rounded-[16px] p-6 shadow-[0_4px_18px_rgba(40,45,70,0.04)] relative overflow-hidden"
+              className="bg-surface border border-border rounded-[16px] p-6 shadow-[0_4px_18px_rgba(40,45,70,0.04)] relative overflow-hidden"
             >
               {isLoadingStats && (
-                <div className="absolute inset-0 bg-[#FFFFFF]/80 flex items-center justify-center z-10 backdrop-blur-[1px]">
-                  <Loader2 className="w-5 h-5 text-[#6C63D9] animate-spin" />
+                <div className="absolute inset-0 bg-surface/80 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                  <Loader2 className="w-5 h-5 text-primary animate-spin" />
                 </div>
               )}
               <div className="flex justify-between items-start mb-5">
@@ -83,15 +83,15 @@ export const SuperAdminDashboard: React.FC = () => {
                   <Icon className="w-[22px] h-[22px]" />
                 </div>
                 <div className={`flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-full ${
-                  stat.isPositive ? 'bg-[#EAF7F1] text-[#27815D]' : 'bg-[#FFF6E6] text-[#D99A3D]'
+                  stat.isPositive ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'
                 }`}>
                   {stat.change}
                 </div>
               </div>
               
               <div>
-                <h3 className="text-[14px] font-medium text-[#687085]">{stat.title}</h3>
-                <p className="text-[28px] font-bold text-[#25283A] mt-1 tracking-tight">{stat.value}</p>
+                <h3 className="text-[14px] font-medium text-text-secondary">{stat.title}</h3>
+                <p className="text-[28px] font-bold text-text-primary mt-1 tracking-tight">{stat.value}</p>
               </div>
             </div>
           );
@@ -101,10 +101,10 @@ export const SuperAdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Revenue Chart Area (Aesthetic Placeholder as no API provided yet) */}
-        <div className="lg:col-span-2 bg-[#FFFFFF] border border-[#E8EAF1] rounded-[16px] p-7 shadow-[0_4px_18px_rgba(40,45,70,0.04)] flex flex-col">
+        <div className="lg:col-span-2 bg-surface border border-border rounded-[16px] p-7 shadow-[0_4px_18px_rgba(40,45,70,0.04)] flex flex-col">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-[18px] font-bold text-[#25283A]">Platform Growth</h3>
-            <select className="bg-[#F5F6FA] border border-[#E8EAF1] text-[13px] font-medium text-[#4D5568] rounded-[10px] px-3 py-2 outline-none focus:border-[#6C63D9] transition-colors cursor-pointer">
+            <h3 className="text-[18px] font-bold text-text-primary">Platform Growth</h3>
+            <select className="bg-surface-soft border border-border text-[13px] font-medium text-text-secondary rounded-[10px] px-3 py-2 outline-none focus:border-[#6C63D9] transition-colors cursor-pointer">
               <option>Last 30 Days</option>
               <option>This Year</option>
             </select>
@@ -113,7 +113,7 @@ export const SuperAdminDashboard: React.FC = () => {
           <div className="flex-1 min-h-[300px] w-full relative">
             <div className="absolute inset-0 flex flex-col justify-between pt-2 pb-8 pointer-events-none">
               {[1, 2, 3, 4, 5].map((line) => (
-                <div key={line} className="w-full border-t border-[#E8EAF1] border-dashed" />
+                <div key={line} className="w-full border-t border-border border-dashed" />
               ))}
             </div>
             
@@ -121,8 +121,8 @@ export const SuperAdminDashboard: React.FC = () => {
               <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
                 <defs>
                   <linearGradient id="chart-gradient" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#6C63D9" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="#6C63D9" stopOpacity="0.01" />
+                    <stop offset="0%" stopColor="#FF6B21" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="#FF6B21" stopOpacity="0.01" />
                   </linearGradient>
                 </defs>
                 <path 
@@ -132,7 +132,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <path 
                   d="M0,70 Q10,60 20,65 T40,40 T60,50 T80,30 T100,10" 
                   fill="none" 
-                  stroke="#6C63D9" 
+                  stroke="#FF6B21" 
                   strokeWidth="2.5" 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
@@ -141,7 +141,7 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex justify-between mt-2 text-[12px] font-medium text-[#9299AA] px-2">
+          <div className="flex justify-between mt-2 text-[12px] font-medium text-text-muted px-2">
             <span>Jan</span>
             <span>Feb</span>
             <span>Mar</span>
@@ -158,14 +158,14 @@ export const SuperAdminDashboard: React.FC = () => {
         </div>
 
         {/* Activity Feed (Placeholder as no API provided) */}
-        <div className="bg-[#FFFFFF] border border-[#E8EAF1] rounded-[16px] p-7 flex flex-col shadow-[0_4px_18px_rgba(40,45,70,0.04)]">
-          <h3 className="text-[18px] font-bold text-[#25283A] mb-8">Recent Activity</h3>
+        <div className="bg-surface border border-border rounded-[16px] p-7 flex flex-col shadow-[0_4px_18px_rgba(40,45,70,0.04)]">
+          <h3 className="text-[18px] font-bold text-text-primary mb-8">Recent Activity</h3>
           <div className="flex-1 flex flex-col items-center justify-center text-center pb-10">
-            <div className="w-16 h-16 bg-[#F8F9FC] border border-[#E8EAF1] rounded-full flex items-center justify-center mb-4">
-               <Activity className="w-8 h-8 text-[#9299AA]" />
+            <div className="w-16 h-16 bg-background border border-border rounded-full flex items-center justify-center mb-4">
+               <Activity className="w-8 h-8 text-text-muted" />
             </div>
-            <p className="text-[14px] font-medium text-[#687085]">No recent activity feed available</p>
-            <p className="text-[13px] text-[#9299AA] mt-1 max-w-[200px]">System logs and activity will appear here once enabled.</p>
+            <p className="text-[14px] font-medium text-text-secondary">No recent activity feed available</p>
+            <p className="text-[13px] text-text-muted mt-1 max-w-[200px]">System logs and activity will appear here once enabled.</p>
           </div>
         </div>
 

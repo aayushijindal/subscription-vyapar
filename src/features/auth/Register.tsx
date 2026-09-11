@@ -38,37 +38,37 @@ export const Register: React.FC = () => {
     });
   };
   
-  const field = 'w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
+  const field = 'w-full rounded-xl border border-border py-2.5 pl-10 pr-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
   
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Company onboarding</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">Create your ERP workspace</h1>
-        <p className="mt-2 text-sm text-slate-500">Enter your business details to create a secure company account.</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-primary">Company onboarding</p>
+        <h1 className="mt-2 text-2xl font-bold text-text-primary">Create your ERP workspace</h1>
+        <p className="mt-2 text-sm text-text-secondary">Enter your business details to create a secure company account.</p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 text-left">
-            <label className="text-xs font-semibold text-slate-700">Company name</label>
+            <label className="text-xs font-semibold text-text-secondary">Company name</label>
             <div className="relative">
-              <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input {...register('business_name')} className={field} />
             </div>
             {errors.business_name && <p className="text-xs text-red-500">{errors.business_name.message}</p>}
           </div>
           <div className="space-y-1.5 text-left">
-            <label className="text-xs font-semibold text-slate-700">Owner name</label>
+            <label className="text-xs font-semibold text-text-secondary">Owner name</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input {...register('owner_name')} className={field} />
             </div>
             {errors.owner_name && <p className="text-xs text-red-500">{errors.owner_name.message}</p>}
           </div>
         </div>
         <div className="space-y-1.5 text-left">
-          <label className="text-xs font-semibold text-slate-700">Business type</label>
-          <select {...register('business_type')} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+          <label className="text-xs font-semibold text-text-secondary">Business type</label>
+          <select {...register('business_type')} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20">
             <option value="RETAIL">Retail</option>
             <option value="WHOLESALE">Wholesale</option>
             <option value="SERVICES">Services</option>
@@ -77,39 +77,39 @@ export const Register: React.FC = () => {
           </select>
         </div>
         <div className="space-y-1.5 text-left">
-          <label className="text-xs font-semibold text-slate-700">Email address</label>
+          <label className="text-xs font-semibold text-text-secondary">Email address</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input type="email" {...register('email')} className={field} />
           </div>
           {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
         </div>
         <div className="space-y-1.5 text-left">
-          <label className="text-xs font-semibold text-slate-700">Mobile number</label>
+          <label className="text-xs font-semibold text-text-secondary">Mobile number</label>
           <div className="relative">
-            <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input {...register('mobile')} placeholder="+919876543210" className={field} />
           </div>
           {errors.mobile && <p className="text-xs text-red-500">{errors.mobile.message}</p>}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 text-left">
-            <label className="text-xs font-semibold text-slate-700">Password</label>
+            <label className="text-xs font-semibold text-text-secondary">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input type={showPassword ? 'text' : 'password'} {...register('password')} className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              <input type={showPassword ? 'text' : 'password'} {...register('password')} className="w-full rounded-xl border border-border py-2.5 pl-10 pr-10 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
             {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
           </div>
           <div className="space-y-1.5 text-left">
-            <label className="text-xs font-semibold text-slate-700">Confirm password</label>
+            <label className="text-xs font-semibold text-text-secondary">Confirm password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input type={showConfirmPassword ? 'text' : 'password'} {...register('confirm_password')} className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              <input type={showConfirmPassword ? 'text' : 'password'} {...register('confirm_password')} className="w-full rounded-xl border border-border py-2.5 pl-10 pr-10 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
@@ -118,7 +118,7 @@ export const Register: React.FC = () => {
         </div>
         <Button type="submit" isLoading={registration.isPending} className="w-full justify-center py-3">Create company account</Button>
       </form>
-      <p className="text-center text-sm text-slate-500">Already registered? <Link to="/login" className="font-semibold text-blue-600">Log in</Link></p>
+      <p className="text-center text-sm text-text-secondary">Already registered? <Link to="/login" className="font-semibold text-primary">Log in</Link></p>
     </div>
   );
 };

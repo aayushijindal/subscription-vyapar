@@ -102,10 +102,10 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
       header: 'Actions',
       render: (item: any) => (
         <div className="flex items-center gap-2">
-          <button onClick={() => handleOpenModal(item)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors">
+          <button onClick={() => handleOpenModal(item)} className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-light rounded transition-colors">
             <Edit2 className="w-4 h-4" />
           </button>
-          <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(item.id) }} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
+          <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(item.id) }} className="p-1.5 text-text-muted hover:text-red-600 hover:bg-red-50 rounded transition-colors">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -119,13 +119,13 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
         <div className="flex items-center gap-3">
           <button 
             onClick={() => navigate(-1)} 
-            className="p-2 -ml-2 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-2 -ml-2 hover:bg-background rounded-full transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+            <ArrowLeft className="w-5 h-5 text-text-secondary" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-            {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
+            <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
+            {description && <p className="text-sm text-text-secondary mt-1">{description}</p>}
           </div>
         </div>
         <Button onClick={() => handleOpenModal()} className="gap-2 shadow-sm">
@@ -135,8 +135,8 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#eaf2f9] border-t-[#376fa9]" />
-          <p className="mt-4 text-sm font-medium text-[#688099]">Loading data...</p>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+          <p className="mt-4 text-sm font-medium text-text-secondary">Loading data...</p>
         </div>
       ) : (
         <Table 

@@ -174,16 +174,16 @@ export const FinishGoodsPage = () => {
 
   if (!isFormOpen) {
     return (
-      <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 mb-6">
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface rounded-2xl shadow-sm border border-border/60 p-5 mb-6">
           <div>
-            <h1 className="text-[18px] font-black text-[#12213b] tracking-tight uppercase">Finish Goods List</h1>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Manage Production Entries</p>
+            <h1 className="text-[18px] font-black text-text-primary tracking-tight uppercase">Finish Goods List</h1>
+            <p className="text-[11px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Manage Production Entries</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search entries..." className="w-[250px] bg-slate-50 border border-slate-200 focus:border-[#2b5f9d] focus:bg-white rounded-xl pl-9 pr-4 py-2.5 text-[13px] outline-none transition-all" />
+              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input type="text" placeholder="Search entries..." className="w-[250px] bg-input border border-border focus:border-primary focus:bg-surface rounded-xl pl-9 pr-4 py-2.5 text-[13px] outline-none transition-all" />
             </div>
             <button onClick={handleNewEntry} className="bg-[#4338CA] hover:bg-[#3730A3] text-white px-5 py-2.5 rounded-xl text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm shadow-indigo-500/20 transition-all">
               <Plus className="w-4 h-4" /> New Entry
@@ -191,21 +191,21 @@ export const FinishGoodsPage = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
           {finishGoodsList.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-slate-300" />
               </div>
-              <h3 className="text-[15px] font-black text-slate-700 uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-slate-500 mt-1 max-w-sm">You haven't recorded any entries yet. Click "New Entry" to get started.</p>
+              <h3 className="text-[15px] font-black text-text-secondary uppercase tracking-wide">No Entries Found</h3>
+              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">You haven't recorded any entries yet. Click "New Entry" to get started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[11px] font-bold">
-                <thead className="bg-[#F8F9FC] text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
+                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
                   <tr>
-                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-slate-300" /></th>
+                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
                     <th className="py-4 px-4">DATE</th>
                     <th className="py-4 px-4">ENTRY NO</th>
                     <th className="py-4 px-4">RAW ITEM</th>
@@ -213,19 +213,19 @@ export const FinishGoodsPage = () => {
                     <th className="py-4 px-4 text-center">ACTIONS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-border">
                   {finishGoodsList.map((fg) => {
                     const dateStr = fg.date ? new Date(fg.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
                     return (
-                      <tr key={fg.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-slate-300" /></td>
-                        <td className="py-4 px-4 text-slate-500">{dateStr}</td>
+                      <tr key={fg.id} className="hover:bg-input/50 transition-colors">
+                        <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-border" /></td>
+                        <td className="py-4 px-4 text-text-secondary">{dateStr}</td>
                         <td className="py-4 px-4 font-bold text-[#4338CA]">{fg.entry_no || '-'}</td>
-                        <td className="py-4 px-4 text-[#12213b]">{fg.raw_item_name || '-'} ({fg.raw_quantity || 0})</td>
-                        <td className="py-4 px-4 text-[#12213b] uppercase">{fg.make_item_name || '-'} ({fg.make_quantity || 0})</td>
+                        <td className="py-4 px-4 text-text-primary">{fg.raw_item_name || '-'} ({fg.raw_quantity || 0})</td>
+                        <td className="py-4 px-4 text-text-primary uppercase">{fg.make_item_name || '-'} ({fg.make_quantity || 0})</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center items-center gap-2">
-                            <button onClick={() => handleEdit(fg.id)} className="text-blue-500 hover:text-blue-600 bg-blue-50 p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => handleEdit(fg.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                             <button onClick={() => handleDelete(fg.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </td>
@@ -242,36 +242,36 @@ export const FinishGoodsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setIsFormOpen(false)} className="text-text-muted hover:text-text-secondary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           </button>
           <div className="w-10 h-10 bg-[#10B981]/10 rounded-lg flex items-center justify-center text-[#10B981]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
           </div>
           <div>
-            <h1 className="text-[16px] font-black text-[#12213b] tracking-tight uppercase">{editingId ? 'Edit Finish Goods' : 'Finish Goods Entry'}</h1>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Record Production From Raw Receipts</p>
+            <h1 className="text-[16px] font-black text-text-primary tracking-tight uppercase">{editingId ? 'Edit Finish Goods' : 'Finish Goods Entry'}</h1>
+            <p className="text-[11px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Record Production From Raw Receipts</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
+      <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden mb-6">
         <div className="p-8">
           
           {/* Section 1: Source */}
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-6">
-              <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold flex items-center justify-center">1</span>
-              <h2 className="text-[13px] font-black text-[#12213b] uppercase tracking-wide">Source (Raw Material)</h2>
+              <span className="w-5 h-5 rounded-full bg-background text-text-secondary text-[10px] font-bold flex items-center justify-center">1</span>
+              <h2 className="text-[13px] font-black text-text-primary uppercase tracking-wide">Source (Raw Material)</h2>
             </div>
             
             <div className="pl-7 space-y-6">
               <div className="space-y-1.5 w-full">
-                <label className="text-[11px] font-bold text-[#12213b] uppercase tracking-wider">Select Available Raw Receipt <span className="text-red-500">*</span></label>
-                <select value={rawReceiptId} onChange={handleRawReceiptChange} className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-slate-500 transition-all outline-none shadow-sm">
+                <label className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Select Available Raw Receipt <span className="text-red-500">*</span></label>
+                <select value={rawReceiptId} onChange={handleRawReceiptChange} className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-text-secondary transition-all outline-none shadow-sm">
                   <option value="">-- SELECT RECEIPT --</option>
                   {rawReceipts.map(rr => (
                     <option key={rr.id} value={rr.id}>{rr.grn_no} - {rr.raw_item_name} (Remaining: {rr.remaining_quantity})</option>
@@ -285,17 +285,17 @@ export const FinishGoodsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-red-600 uppercase tracking-wider">Production Date <span className="text-red-500">*</span></label>
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-slate-700 transition-all outline-none" />
+                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-text-secondary transition-all outline-none" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-red-600 uppercase tracking-wider">Consumed Quantity <span className="text-red-500">*</span></label>
-                  <input type="number" value={rawQuantity} disabled className="w-full bg-slate-100 border border-slate-200 rounded-lg p-3 text-[13px] text-slate-500 cursor-not-allowed outline-none" placeholder="Auto-filled" />
+                  <input type="number" value={rawQuantity} disabled className="w-full bg-background border border-border rounded-lg p-3 text-[13px] text-text-secondary cursor-not-allowed outline-none" placeholder="Auto-filled" />
                 </div>
               </div>
             </div>
           </div>
 
-          <hr className="border-slate-100 mb-8" />
+          <hr className="border-border/50 mb-8" />
 
           {/* Section 2: Output */}
           <div className="mb-10">
@@ -308,7 +308,7 @@ export const FinishGoodsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-[#10B981] uppercase tracking-wider">Make Item Name <span className="text-red-500">*</span></label>
-                  <select value={makeItemId} onChange={(e) => setMakeItemId(e.target.value)} className="w-full bg-white border border-[#10B981]/30 focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] rounded-lg p-3 text-[13px] text-slate-500 transition-all outline-none">
+                  <select value={makeItemId} onChange={(e) => setMakeItemId(e.target.value)} className="w-full bg-surface border border-[#10B981]/30 focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] rounded-lg p-3 text-[13px] text-text-secondary transition-all outline-none">
                     <option value="">-- SELECT FINISH GOOD --</option>
                     {items.map(i => (
                       <option key={i.id} value={i.id}>{i.item_name || i.name}</option>
@@ -320,21 +320,21 @@ export const FinishGoodsPage = () => {
                   <input type="number" value={makeQuantity} onChange={handleMakeQuantityChange} placeholder="e.g. 980.00" className="w-full bg-[#10B981]/5 border border-[#10B981]/30 focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] rounded-lg p-3 text-[13px] text-[#10B981] font-bold transition-all outline-none" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Scrap Quantity</label>
-                  <input type="number" value={scrapQuantity} disabled className="w-full bg-slate-100 border border-slate-200 rounded-lg p-3 text-[13px] text-slate-500 cursor-not-allowed outline-none" placeholder="Auto-calculated" />
+                  <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Scrap Quantity</label>
+                  <input type="number" value={scrapQuantity} disabled className="w-full bg-background border border-border rounded-lg p-3 text-[13px] text-text-secondary cursor-not-allowed outline-none" placeholder="Auto-calculated" />
                 </div>
               </div>
               
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Remarks</label>
-                <input type="text" value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Optional production remarks or batch identifiers..." className="w-full bg-slate-50 border border-slate-200 focus:border-[#2b5f9d] focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-slate-700 transition-all outline-none" />
+                <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Remarks</label>
+                <input type="text" value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Optional production remarks or batch identifiers..." className="w-full bg-input border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-3 text-[13px] text-text-secondary transition-all outline-none" />
               </div>
 
               {rawQuantity && makeQuantity && Number(makeQuantity) <= Number(rawQuantity) && (
-                <div className="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4 font-mono text-[13px] text-slate-600 max-w-sm">
+                <div className="mt-4 bg-input border border-border rounded-lg p-4 font-mono text-[13px] text-text-secondary max-w-sm">
                   <div className="flex justify-between py-1"><span>Consumed:</span> <span>{rawQuantity}</span></div>
                   <div className="flex justify-between py-1"><span>Produced:</span> <span>{makeQuantity}</span></div>
-                  <div className="flex justify-between py-1 border-t border-slate-200 mt-1 font-bold text-slate-800"><span>Scrap:</span> <span>{scrapQuantity}</span></div>
+                  <div className="flex justify-between py-1 border-t border-border mt-1 font-bold text-text-primary"><span>Scrap:</span> <span>{scrapQuantity}</span></div>
                 </div>
               )}
             </div>
@@ -342,7 +342,7 @@ export const FinishGoodsPage = () => {
           
         </div>
         
-        <div className="bg-slate-50 p-6 flex justify-end border-t border-slate-200/60">
+        <div className="bg-input p-6 flex justify-end border-t border-border/60">
           <button onClick={handleSubmit} className="bg-[#10B981] hover:bg-[#059669] text-white px-8 py-3 rounded-lg text-[13px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm shadow-[#10B981]/30 transition-colors">
             <Save className="w-4 h-4" /> {editingId ? 'Update Conversion' : 'Process Conversion'}
           </button>

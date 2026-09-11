@@ -146,21 +146,21 @@ export const GRNsPage = () => {
 
   if (!isFormOpen) {
     return (
-      <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 mb-6">
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface rounded-2xl shadow-sm border border-border/60 p-5 mb-6">
           <div>
             <h1 className="text-[18px] font-black text-[#1E293B] tracking-tight uppercase">GRN ENTRY LIST</h1>
-            <p className="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Manage goods receipt notes</p>
+            <p className="text-[11px] font-bold text-text-muted uppercase mt-0.5">Manage goods receipt notes</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search GRN..." className="w-[200px] bg-slate-50 border border-slate-200 focus:border-[#1E293B] focus:bg-white rounded-xl pl-9 pr-4 py-2 text-[12px] font-medium outline-none transition-all" />
+              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input type="text" placeholder="Search GRN..." className="w-[200px] bg-input border border-border focus:border-[#1E293B] focus:bg-surface rounded-xl pl-9 pr-4 py-2 text-[12px] font-medium outline-none transition-all" />
             </div>
-            <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
             </button>
-            <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
+            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <FileText className="w-3.5 h-3.5" /> PDF
             </button>
             <button className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
@@ -172,21 +172,21 @@ export const GRNsPage = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
           {grnsList.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-slate-300" />
               </div>
-              <h3 className="text-[15px] font-black text-slate-700 uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-slate-500 mt-1 max-w-sm">You haven't recorded any entries yet. Click "Add New" to get started.</p>
+              <h3 className="text-[15px] font-black text-text-secondary uppercase tracking-wide">No Entries Found</h3>
+              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">You haven't recorded any entries yet. Click "Add New" to get started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[11px] font-bold">
-                <thead className="bg-[#F8F9FC] text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
+                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
                   <tr>
-                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-slate-300" /></th>
+                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
                     <th className="py-4 px-4">DATE</th>
                     <th className="py-4 px-4">PURCHASE BILL NO</th>
                     <th className="py-4 px-4">CHALLAN NO</th>
@@ -194,15 +194,15 @@ export const GRNsPage = () => {
                     <th className="py-4 px-4 text-center">ACTIONS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-border">
                   {grnsList.map((grn) => {
                     const partyId = grn.party_id || grn.party;
                     const partyName = grn.party_name || (Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId);
                     const dateStr = grn.grn_date || grn.date ? new Date(grn.grn_date || grn.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
                     return (
-                    <tr key={grn.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-slate-300" /></td>
-                      <td className="py-4 px-4 text-slate-500">{dateStr}</td>
+                    <tr key={grn.id} className="hover:bg-input/50 transition-colors">
+                      <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-border" /></td>
+                      <td className="py-4 px-4 text-text-secondary">{dateStr}</td>
                       <td className="py-4 px-4 font-bold text-[#4338CA]">{grn.purchase_no_display || '-'}</td>
                       <td className="py-4 px-4 text-[#1E293B]">{grn.grn_no || grn.challan_no || '-'}</td>
                       <td className="py-4 px-4 text-[#1E293B] uppercase">{partyName || '-'}</td>
@@ -210,8 +210,8 @@ export const GRNsPage = () => {
                         <div className="flex justify-center items-center gap-2">
                           <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded transition-colors"><Download className="w-3.5 h-3.5" /></button>
                           <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded transition-colors"><FileText className="w-3.5 h-3.5" /></button>
-                          <button className="text-slate-500 hover:text-slate-600 bg-slate-100 p-1.5 rounded transition-colors"><Printer className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleEdit(grn.id)} className="text-blue-500 hover:text-blue-600 bg-blue-50 p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button className="text-text-secondary hover:text-text-secondary bg-background p-1.5 rounded transition-colors"><Printer className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleEdit(grn.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                           <button onClick={() => handleDelete(grn.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
                       </td>
@@ -228,10 +228,10 @@ export const GRNsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] p-4 sm:p-6 lg:p-8 font-sans">
-      <div className="flex justify-between items-center bg-white rounded-xl shadow-sm border border-slate-200/60 p-4 mb-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans">
+      <div className="flex justify-between items-center bg-surface rounded-xl shadow-sm border border-border/60 p-4 mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setIsFormOpen(false)} className="text-text-muted hover:text-text-secondary transition-colors">
             <X className="w-5 h-5" />
           </button>
           <h1 className="text-[18px] font-black text-[#1E293B] tracking-tight uppercase">{editingId ? 'Edit GRN Entry' : 'New GRN Entry'}</h1>
@@ -241,50 +241,50 @@ export const GRNsPage = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
+      <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden mb-6">
         <div className="p-6 sm:p-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 mb-10">
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Purchase Bill No</label>
-              <select value={purchaseId} onChange={(e) => setPurchaseId(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-500 transition-all outline-none">
+              <select value={purchaseId} onChange={(e) => setPurchaseId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
                 <option value="">SELECT BILL</option>
                 {purchasesList.map((p: any) => <option key={p.id} value={p.id}>{p.invoice_no || p.purchase_no}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Challan No <span className="text-red-500">*</span></label>
-              <input type="text" value={challanNo} onChange={(e) => setChallanNo(e.target.value)} placeholder="CHALLAN NO" className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-300" />
+              <input type="text" value={challanNo} onChange={(e) => setChallanNo(e.target.value)} placeholder="CHALLAN NO" className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none placeholder:text-slate-300" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Date <span className="text-red-500">*</span></label>
-              <input type="date" value={grnDate} onChange={(e) => setGrnDate(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none" />
+              <input type="date" value={grnDate} onChange={(e) => setGrnDate(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Party <span className="text-red-500">*</span></label>
-              <select value={partyId} onChange={(e) => setPartyId(e.target.value)} className="w-full bg-white border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-500 transition-all outline-none">
+              <select value={partyId} onChange={(e) => setPartyId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
                 <option value="">SELECT PARTY</option>
                 {parties.map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Vehicle No</label>
-              <input type="text" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} placeholder="GJ-01-XX-0000" className="w-full bg-[#F8F9FC] border border-slate-200 focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-slate-700 transition-all outline-none placeholder:text-slate-400" />
+              <input type="text" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} placeholder="GJ-01-XX-0000" className="w-full bg-background border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none placeholder:text-text-muted" />
             </div>
           </div>
 
-          <hr className="border-slate-100 mb-8" />
+          <hr className="border-border/50 mb-8" />
 
           {/* Dynamic Items Section */}
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-[14px] font-black text-[#1E293B] tracking-wide uppercase">GRN Items</h2>
-            <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 hover:text-[#4338CA] transition-colors bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 hover:border-[#4338CA]/30">
+            <button onClick={handleAddItem} className="flex items-center gap-1.5 text-[11px] font-bold text-text-secondary hover:text-[#4338CA] transition-colors bg-input px-3 py-1.5 rounded-md border border-border hover:border-[#4338CA]/30">
               <Plus className="w-3 h-3" /> ADD ROW
             </button>
           </div>
 
-          <div className="border border-slate-200/60 rounded-xl overflow-hidden mb-12">
+          <div className="border border-border/60 rounded-xl overflow-hidden mb-12">
             <table className="w-full text-left text-[12px]">
-              <thead className="bg-[#F8F9FC] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/60">
+              <thead className="bg-background text-text-secondary font-bold uppercase tracking-wider border-b border-border/60">
                 <tr>
                   <th className="py-3 px-4 w-[50px] text-center">#</th>
                   <th className="py-3 px-4">Item Name</th>
@@ -295,26 +295,26 @@ export const GRNsPage = () => {
                   <th className="py-3 px-4 w-[50px]"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {items.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={item.id} className="hover:bg-input/50 transition-colors">
                     <td className="py-3 px-4 text-center font-medium text-[#4338CA]">{idx + 1}</td>
                     <td className="py-3 px-4">
-                      <select value={item.item_id || item.item || ''} onChange={(e) => updateItem(item.id, 'item_id', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-slate-500 outline-none focus:border-[#4338CA]">
+                      <select value={item.item_id || item.item || ''} onChange={(e) => updateItem(item.id, 'item_id', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-text-secondary outline-none focus:border-[#4338CA]">
                         <option value="">-- SELECT ITEM --</option>
                         {itemsList.map((i: any) => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                       </select>
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.nos || ''} onChange={(e) => updateItem(item.id, 'nos', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.nos || ''} onChange={(e) => updateItem(item.id, 'nos', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-center text-text-secondary outline-none focus:border-[#4338CA]" />
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.quantity || ''} onChange={(e) => updateItem(item.id, 'quantity', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.quantity || ''} onChange={(e) => updateItem(item.id, 'quantity', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-center text-text-secondary outline-none focus:border-[#4338CA]" />
                     </td>
                     <td className="py-3 px-4">
-                      <input type="number" value={item.rate || ''} onChange={(e) => updateItem(item.id, 'rate', e.target.value)} className="w-full bg-white border border-slate-200 rounded-md p-2 text-[13px] text-center text-slate-700 outline-none focus:border-[#4338CA]" />
+                      <input type="number" value={item.rate || ''} onChange={(e) => updateItem(item.id, 'rate', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-center text-text-secondary outline-none focus:border-[#4338CA]" />
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-slate-700">
+                    <td className="py-3 px-4 text-right font-bold text-text-secondary">
                       ₹ {item.amount || 0}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -328,8 +328,8 @@ export const GRNsPage = () => {
             </table>
           </div>
 
-          <div className="flex items-center justify-end gap-4 pt-6 border-t border-slate-100">
-            <button onClick={() => setIsFormOpen(false)} className="text-[12px] font-bold text-slate-500 hover:text-slate-700 uppercase tracking-wider px-4 py-2">
+          <div className="flex items-center justify-end gap-4 pt-6 border-t border-border/50">
+            <button onClick={() => setIsFormOpen(false)} className="text-[12px] font-bold text-text-secondary hover:text-text-secondary uppercase tracking-wider px-4 py-2">
               Cancel
             </button>
             <button onClick={handleSubmit} className="bg-[#0F172A] hover:bg-black text-white px-8 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm transition-colors">

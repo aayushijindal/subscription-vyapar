@@ -65,13 +65,13 @@ export function Table<T>({ data, columns, searchPlaceholder = 'Search...', searc
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
         {searchKey && (
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
               placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface transition-all"
             />
           </div>
         )}
@@ -84,30 +84,30 @@ export function Table<T>({ data, columns, searchPlaceholder = 'Search...', searc
       </div>
 
       {/* Responsive Table Panel */}
-      <div className="overflow-x-auto border border-slate-100 rounded-xl bg-white shadow-sm">
-        <table className="w-full border-collapse text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-900 border-b border-slate-100">
+      <div className="overflow-x-auto border border-border/50 rounded-xl bg-surface shadow-sm">
+        <table className="w-full border-collapse text-left text-sm text-text-secondary">
+          <thead className="bg-input text-text-primary border-b border-border/50">
             <tr>
               {columns.map((column, idx) => (
                 <th 
                   key={idx} 
-                  className={`p-4 font-semibold ${column.sortable ? 'cursor-pointer select-none hover:bg-slate-100/80' : ''}`}
+                  className={`p-4 font-semibold ${column.sortable ? 'cursor-pointer select-none hover:bg-background/80' : ''}`}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center gap-1.5">
                     {column.header}
                     {column.sortable && sortKey === column.key && (
-                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 text-text-secondary" /> : <ChevronDown className="h-4 w-4 text-text-secondary" />
                     )}
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {filteredData.length > 0 ? (
               filteredData.map((item, rowIdx) => (
-                <tr key={rowIdx} className="hover:bg-slate-50/50 transition-colors">
+                <tr key={rowIdx} className="hover:bg-input/50 transition-colors">
                   {columns.map((column, colIdx) => (
                     <td key={colIdx} className="p-4 align-middle">
                       {column.render ? column.render(item) : (item as any)[column.key]}
@@ -117,7 +117,7 @@ export function Table<T>({ data, columns, searchPlaceholder = 'Search...', searc
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-slate-400">
+                <td colSpan={columns.length} className="p-8 text-center text-text-muted">
                   No records found.
                 </td>
               </tr>
