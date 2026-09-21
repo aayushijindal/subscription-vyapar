@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, X, Save, Pencil, Trash2, ArrowLeft, Download, FileText, Printer, FileSpreadsheet, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { salesApi } from '../../services/api/sales';
-import { purchaseApi } from '../../services/api/purchase'; // For getAccounts, getItems, getTransports
+import { masterApi } from '../../services/api/master';
 
 export const SalesPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -10,6 +10,8 @@ export const SalesPage: React.FC = () => {
   const [itemsList, setItemsList] = useState<any[]>([]);
   const [transports, setTransports] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Form State
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -32,7 +34,7 @@ export const SalesPage: React.FC = () => {
   const [billDate, setBillDate] = useState('');
   const [transport, setTransport] = useState('');
   const [distance, setDistance] = useState('');
-  const [vehicleType, setVehicleType] = useState('Regular');
+  const [vehicleType, setVehicleType] = useState('R');
 
   // Computed
   const buyerGstin = buyerId ? (accounts.find(a => a.id === buyerId)?.gst_number || accounts.find(a => a.id === buyerId)?.gstin || '') : '';
@@ -46,17 +48,32 @@ export const SalesPage: React.FC = () => {
   const [loadingType, setLoadingType] = useState<'AUTO'|'MANUAL'>('MANUAL');
   const [loadingAmt, setLoadingAmt] = useState('0.00');
 
+  const fetchSales = async () => {
+    await Promise.resolve(); // Defer state update to avoid sync state update within effect
+    setIsLoading(true);
+    try {
+      const res = await salesApi.sales.list();
+      setSales(Array.isArray(res) ? res : (res as any).results || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Initial fetch
     if (!isFormOpen) {
-      salesApi.sales.list().then(res => setSales(Array.isArray(res) ? res : (res as any).results || [])).catch(console.error);
+      setTimeout(() => {
+        fetchSales();
+      }, 0);
     }
   }, [isFormOpen]);
 
   useEffect(() => {
-    purchaseApi.getAccounts().then(res => setAccounts(Array.isArray(res.data) ? res.data : res.data?.results || [])).catch(console.error);
-    purchaseApi.getItems().then(res => setItemsList(Array.isArray(res.data) ? res.data : res.data?.results || [])).catch(console.error);
-    purchaseApi.getTransports().then(res => setTransports(Array.isArray(res.data) ? res.data : res.data?.results || [])).catch(console.error);
+    masterApi.accounts.list().then(res => setAccounts(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
+    masterApi.items.list().then(res => setItemsList(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
+    masterApi.transports.list().then(res => setTransports(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
   }, []);
 
   const handleAddItem = () => {
@@ -97,15 +114,22 @@ export const SalesPage: React.FC = () => {
   
   // Tax calculation on (Taxable + Freight + Loading - Discount)
   const taxableForGst = totalTaxable + freightAmt + applicableLoading - discountAmt;
-  const cgstAmount = taxableForGst * 0.09;
-  const sgstAmount = taxableForGst * 0.09;
   
-  const grossAmount = taxableForGst + cgstAmount + sgstAmount;
+  const isIntrastate = buyerGstin.startsWith('24');
+  const cgstAmount = isIntrastate ? taxableForGst * 0.09 : 0;
+  const sgstAmount = isIntrastate ? taxableForGst * 0.09 : 0;
+  const igstAmount = !isIntrastate ? taxableForGst * 0.18 : 0;
+  
+  const grossAmount = taxableForGst + cgstAmount + sgstAmount + igstAmount;
   const netPayable = Math.round(grossAmount);
   const roundOff = netPayable - grossAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!invoiceNo || !invoiceDate || !buyerId) {
+      toast.error('Please fill in Invoice No, Date, and Buyer.');
+      return;
+    }
     try {
       const payload = {
         invoice_no: invoiceNo,
@@ -118,9 +142,8 @@ export const SalesPage: React.FC = () => {
         desp_from: despFrom,
         desp_to: despTo,
         pincode: pincode,
-        party_id: buyerId || 1, // backend might expect party_id
-        buyer_id: buyerId,
-        consignee_id: consigneeId,
+        buyer: buyerId || 1,
+        consignee: consigneeId,
         book_name: bookName,
         eway_bill_no: ewayBillNo,
         bill_date: billDate || null,
@@ -132,15 +155,16 @@ export const SalesPage: React.FC = () => {
         discount_percentage: Number(discountPercent || 0),
         discount_amount: Number(discountAmt.toFixed(2)),
         items: items.map((item: any) => ({
-          item_id: item.item_id,
+          item: item.item_id,
           nos: item.nos,
           quantity: item.quantity,
           rate: item.rate,
-          line_total: item.amount || 0
+          amount: item.amount || 0
         })),
-        total_taxable: Number(totalTaxable.toFixed(2)),
+        total_amount: Number(totalTaxable.toFixed(2)),
         cgst_amount: Number(cgstAmount.toFixed(2)),
         sgst_amount: Number(sgstAmount.toFixed(2)),
+        igst_amount: Number(igstAmount.toFixed(2)),
         round_off: Number(roundOff.toFixed(2)),
         grand_total: Number(netPayable.toFixed(2))
       };
@@ -176,14 +200,14 @@ export const SalesPage: React.FC = () => {
       setDespFrom(sale.desp_from || '');
       setDespTo(sale.desp_to || '');
       setPincode(sale.pincode || '');
-      setBuyerId(sale.party_id || sale.buyer_id || '');
-      setConsigneeId(sale.consignee_id || '');
+      setBuyerId(sale.buyer || sale.party_id || sale.buyer_id || '');
+      setConsigneeId(sale.consignee || sale.consignee_id || '');
       setBookName(sale.book_name || '');
       setEwayBillNo(sale.eway_bill_no || '');
       setBillDate(sale.bill_date || '');
       setTransport(sale.transport || '');
       setDistance(sale.distance_km || '');
-      setVehicleType(sale.vehicle_type || 'Regular');
+      setVehicleType(sale.vehicle_type || 'R');
       
       setFreight(sale.freight?.toString() || '0.00');
       
@@ -195,11 +219,11 @@ export const SalesPage: React.FC = () => {
       if (sale.items && sale.items.length > 0) {
         setItems(sale.items.map((i: any) => ({
           id: i.id || Date.now() + Math.random(),
-          item_id: i.item_id || '',
+          item_id: i.item || i.item_id || '',
           nos: i.nos || 1,
           quantity: i.quantity || 0,
           rate: i.rate || 0,
-          amount: i.line_total || 0
+          amount: i.amount || i.line_total || 0
         })));
       } else {
         setItems([{ id: 1, item_id: '', nos: 1, quantity: 0, rate: 0, amount: 0 }]);
@@ -242,7 +266,7 @@ export const SalesPage: React.FC = () => {
     setBillDate('');
     setTransport('');
     setDistance('');
-    setVehicleType('Regular');
+    setVehicleType('R');
     
     setFreight('0.00');
     setLoadingAmt('0.00');
@@ -266,10 +290,10 @@ export const SalesPage: React.FC = () => {
               <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input type="text" placeholder="Search Invoice..." className="pl-9 pr-4 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:border-primary" />
             </div>
-            <button className="bg-background hover:bg-slate-200 text-text-primary px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border">
+            <button onClick={() => toast.success(`Exporting ${selectedIds.length} items to Excel (In Dev)`)} disabled={selectedIds.length === 0} className={`px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border ${selectedIds.length ? 'bg-input hover:bg-border/30 text-text-primary' : 'bg-input text-text-muted opacity-50 cursor-not-allowed'}`}>
                <FileSpreadsheet className="w-4 h-4" /> Excel
             </button>
-            <button className="bg-background hover:bg-slate-200 text-text-primary px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border">
+            <button onClick={() => toast.success(`Exporting ${selectedIds.length} items to PDF (In Dev)`)} disabled={selectedIds.length === 0} className={`px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border ${selectedIds.length ? 'bg-input hover:bg-border/30 text-text-primary' : 'bg-input text-text-muted opacity-50 cursor-not-allowed'}`}>
                <FileText className="w-4 h-4" /> PDF
             </button>
             <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
@@ -285,7 +309,9 @@ export const SalesPage: React.FC = () => {
           <table className="w-full text-left text-[12px] font-bold">
             <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
               <tr>
-                <th className="py-4 px-5 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
+                <th className="py-4 px-5 w-[40px] text-center">
+                  <input type="checkbox" checked={sales.length > 0 && selectedIds.length === sales.length} onChange={(e) => setSelectedIds(e.target.checked ? sales.map(s => s.id) : [])} className="rounded border-border" />
+                </th>
                 <th className="py-4 px-5">DATE</th>
                 <th className="py-4 px-5">INVOICE NO</th>
                 <th className="py-4 px-5">BUYER</th>
@@ -296,22 +322,40 @@ export const SalesPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {sales.map((sale) => {
-                const partyName = accounts.find(p => p.id === (sale.party_id || sale.buyer_id))?.name || accounts.find(p => p.id === (sale.party_id || sale.buyer_id))?.account_name || 'UNKNOWN';
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-text-secondary font-medium">Loading sales entries...</td>
+                </tr>
+              ) : sales.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-text-secondary font-medium">No sales found.</td>
+                </tr>
+              ) : sales.map((sale) => {
+                const buyerId = sale.buyer || sale.buyer_id || sale.party_id;
+                const partyName = accounts.find(p => p.id === buyerId)?.name || accounts.find(p => p.id === buyerId)?.account_name || 'UNKNOWN';
                 const dateStr = sale.invoice_date ? new Date(sale.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                // Fake status for now
+                
+                const eInvoiceActive = sale.irn && sale.irn.length > 5;
                 const ewbActive = sale.eway_bill_no && sale.eway_bill_no.length > 2;
                 return (
                   <tr key={sale.id} className="hover:bg-input/50 transition-colors">
-                    <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-border" /></td>
+                    <td className="py-4 px-5 text-center">
+                      <input type="checkbox" checked={selectedIds.includes(sale.id)} onChange={() => setSelectedIds(prev => prev.includes(sale.id) ? prev.filter(id => id !== sale.id) : [...prev, sale.id])} className="rounded border-border" />
+                    </td>
                     <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
                     <td className="py-4 px-5 text-text-primary text-[13px]">{sale.invoice_no || '--'}</td>
                     <td className="py-4 px-5 text-text-primary uppercase">{partyName}</td>
                     <td className="py-4 px-5 text-text-primary">₹ {Number(sale.grand_total || 0).toLocaleString()}</td>
                     <td className="py-4 px-5 text-center">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
-                      </span>
+                      {eInvoiceActive ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-border text-text-secondary rounded-full bg-input font-black uppercase tracking-wider">
+                           NOT GENERATED
+                        </span>
+                      )}
                     </td>
                     <td className="py-4 px-5 text-center flex flex-col items-center justify-center gap-1">
                       {ewbActive ? (
@@ -331,7 +375,7 @@ export const SalesPage: React.FC = () => {
                     </td>
                     <td className="py-4 px-5 text-center">
                       <div className="flex justify-center items-center gap-2">
-                        <button className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleEdit(sale.id)} className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
                         <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded border border-emerald-100 transition-colors"><Download className="w-3.5 h-3.5" /></button>
                         <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded border border-rose-100 transition-colors"><FileText className="w-3.5 h-3.5" /></button>
                         <button className="text-text-secondary hover:text-text-secondary bg-input p-1.5 rounded border border-border transition-colors"><Printer className="w-3.5 h-3.5" /></button>
@@ -368,12 +412,12 @@ export const SalesPage: React.FC = () => {
       <div className="bg-surface rounded-2xl shadow-sm border border-border/60 p-6 sm:p-8 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5 mb-8">
           <div>
-            <label className={labelClass}>INVOICE NUMBER</label>
-            <input type="text" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} className={inputClass} />
+            <label className={labelClass}>INVOICE NUMBER <span className="text-red-500">*</span></label>
+            <input type="text" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} className={inputClass} required />
           </div>
           <div>
-            <label className={labelClass}>INVOICE DATE</label>
-            <input type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} className={inputClass} />
+            <label className={labelClass}>INVOICE DATE <span className="text-red-500">*</span></label>
+            <input type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} className={inputClass} required />
           </div>
           <div>
             <label className={labelClass}>VEHICLE NUMBER</label>
@@ -410,8 +454,8 @@ export const SalesPage: React.FC = () => {
             <input type="text" placeholder="PIN NO." value={pincode} onChange={e => setPincode(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>BUYER</label>
-            <select value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass}>
+            <label className={labelClass}>BUYER <span className="text-red-500">*</span></label>
+            <select value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass} required>
               <option value="">-- SELECT BUYER --</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.name || a.account_name}</option>)}
             </select>
@@ -458,8 +502,8 @@ export const SalesPage: React.FC = () => {
           <div>
             <label className={labelClass}>VEHICLE TYPE</label>
             <select value={vehicleType} onChange={e => setVehicleType(e.target.value)} className={inputClass}>
-              <option value="Regular">Regular</option>
-              <option value="ODC">Over Dimensional Cargo</option>
+              <option value="R">Regular</option>
+              <option value="O">Over Dimensional Cargo (ODC)</option>
             </select>
           </div>
         </div>
@@ -533,9 +577,9 @@ export const SalesPage: React.FC = () => {
               <div className="flex justify-between items-center border-t border-border/50 pt-3">
                 <span className="text-text-secondary">CASH DISCOUNT (-)</span>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center border border-red-200 rounded overflow-hidden w-24">
-                    <input type="number" value={discountPercent} onChange={e => setDiscountPercent(e.target.value)} className="w-full px-2 py-1 text-center text-red-600 bg-red-50/30 outline-none text-[11px]" />
-                    <span className="bg-red-50 px-2 py-1 text-red-600 border-l border-red-200">%</span>
+                  <div className="flex items-center border border-border rounded overflow-hidden w-24">
+                    <input type="number" value={discountPercent} onChange={e => setDiscountPercent(e.target.value)} className="w-full px-2 py-1 text-center text-text-primary bg-input outline-none text-[11px]" />
+                    <span className="bg-background px-2 py-1 text-text-secondary border-l border-border">%</span>
                   </div>
                   <span className="text-red-500 w-24 text-right">- ₹ {discountAmt.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                 </div>
@@ -560,14 +604,23 @@ export const SalesPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
-                <span>CGST (9%) (+)</span>
-                <span className="text-text-primary">₹ {cgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-              </div>
-              <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
-                <span>SGST (9%) (+)</span>
-                <span className="text-text-primary">₹ {sgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-              </div>
+              {isIntrastate ? (
+                <>
+                  <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
+                    <span>CGST (9%) (+)</span>
+                    <span className="text-text-primary">₹ {cgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
+                    <span>SGST (9%) (+)</span>
+                    <span className="text-text-primary">₹ {sgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
+                  <span>IGST (18%) (+)</span>
+                  <span className="text-text-primary">₹ {igstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                </div>
+              )}
 
               <div className="flex justify-between items-center border-t border-border/50 pt-3 text-text-secondary">
                 <span>GROSS AMOUNT</span>

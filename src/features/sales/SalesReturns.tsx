@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, X, Save, Pencil, Trash2, ArrowLeft, Download, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { salesApi } from '../../services/api/sales';
-import { purchaseApi } from '../../services/api/purchase'; // For getAccounts, getItems
+import { masterApi } from '../../services/api/master';
 
 export const SalesReturnsPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -27,8 +27,8 @@ export const SalesReturnsPage: React.FC = () => {
   }, [isFormOpen]);
 
   useEffect(() => {
-    purchaseApi.getAccounts().then(res => setAccounts(Array.isArray(res.data) ? res.data : res.data?.results || [])).catch(console.error);
-    purchaseApi.getItems().then(res => setItemsList(Array.isArray(res.data) ? res.data : res.data?.results || [])).catch(console.error);
+    masterApi.accounts.list().then(res => setAccounts(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
+    masterApi.items.list().then(res => setItemsList(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
   }, []);
 
   const handleAddItem = () => {
@@ -56,7 +56,17 @@ export const SalesReturnsPage: React.FC = () => {
     }));
   };
 
-  const netPayable = items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  const totalTaxable = items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  
+  const buyerGstin = buyerId ? (accounts.find(a => a.id === buyerId)?.gst_number || accounts.find(a => a.id === buyerId)?.gstin || '') : '';
+  const isIntrastate = buyerGstin.startsWith('24');
+  const cgstAmount = isIntrastate ? totalTaxable * 0.09 : 0;
+  const sgstAmount = isIntrastate ? totalTaxable * 0.09 : 0;
+  const igstAmount = !isIntrastate ? totalTaxable * 0.18 : 0;
+  
+  const grossAmount = totalTaxable + cgstAmount + sgstAmount + igstAmount;
+  const netPayable = Math.round(grossAmount);
+  const roundOff = netPayable - grossAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,15 +78,19 @@ export const SalesReturnsPage: React.FC = () => {
     try {
       const payload = {
         invoice_no: invoiceNo,
-        date: returnDate,
-        buyer_id: buyerId,
-        party_id: buyerId, // some apis expect party_id
+        invoice_date: returnDate,
+        buyer: buyerId,
         items: items.map((item: any) => ({
-          item_id: item.item_id,
+          item: item.item_id,
           quantity: item.quantity,
           rate: item.rate,
-          line_total: item.amount || 0
+          amount: item.amount || 0
         })),
+        total_amount: Number(totalTaxable.toFixed(2)),
+        cgst_amount: Number(cgstAmount.toFixed(2)),
+        sgst_amount: Number(sgstAmount.toFixed(2)),
+        igst_amount: Number(igstAmount.toFixed(2)),
+        round_off: Number(roundOff.toFixed(2)),
         grand_total: Number(netPayable.toFixed(2))
       };
       
@@ -103,15 +117,15 @@ export const SalesReturnsPage: React.FC = () => {
       setEditingId(id);
       setInvoiceNo(ret.invoice_no || '');
       setReturnDate(ret.date || ret.invoice_date || '');
-      setBuyerId(ret.buyer_id || ret.party_id || '');
+      setBuyerId(ret.buyer || ret.buyer_id || ret.party_id || '');
       
       if (ret.items && ret.items.length > 0) {
         setItems(ret.items.map((i: any) => ({
           id: i.id || Date.now() + Math.random(),
-          item_id: i.item_id || '',
+          item_id: i.item || i.item_id || '',
           quantity: i.quantity || 0,
           rate: i.rate || 0,
-          amount: i.line_total || 0
+          amount: i.amount || i.line_total || 0
         })));
       } else {
         setItems([{ id: 1, item_id: '', quantity: 0, rate: 0, amount: 0 }]);
@@ -183,8 +197,9 @@ export const SalesReturnsPage: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-text-secondary font-medium">No sales returns found.</td>
                 </tr>
-              ) : returns.map((ret) => {
-                const partyName = accounts.find(p => p.id === (ret.party_id || ret.buyer_id))?.name || accounts.find(p => p.id === (ret.party_id || ret.buyer_id))?.account_name || 'UNKNOWN';
+              ) : returns.map((ret: any) => {
+                const buyerId = ret.buyer || ret.buyer_id || ret.party_id;
+                const partyName = accounts.find(p => p.id === buyerId)?.name || accounts.find(p => p.id === buyerId)?.account_name || 'UNKNOWN';
                 const dateStr = ret.date || ret.invoice_date ? new Date(ret.date || ret.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
                 return (
                   <tr key={ret.id} className="hover:bg-input/50 transition-colors">
@@ -195,7 +210,7 @@ export const SalesReturnsPage: React.FC = () => {
                     <td className="py-4 px-5 text-text-primary">₹ {Number(ret.grand_total || 0).toLocaleString()}</td>
                     <td className="py-4 px-5 text-center">
                       <div className="flex justify-center items-center gap-2">
-                        <button className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleEdit(ret.id)} className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
                         <button onClick={() => handleEdit(ret.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                         <button onClick={() => handleDelete(ret.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
@@ -294,9 +309,36 @@ export const SalesReturnsPage: React.FC = () => {
         
         {/* Simple Summary Box */}
         <div className="bg-background border border-border rounded-xl p-5 mb-8">
-           <div className="flex justify-between items-center text-[15px] font-black text-text-primary uppercase tracking-wider">
-              <span>NET PAYABLE</span>
-              <span className="text-[20px]">₹ {netPayable.toLocaleString()}</span>
+           <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center text-[13px] font-bold text-text-secondary">
+                 <span>TOTAL TAXABLE</span>
+                 <span className="text-text-primary">₹ {totalTaxable.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+              </div>
+              {isIntrastate ? (
+                <>
+                  <div className="flex justify-between items-center text-[13px] font-bold text-text-secondary">
+                     <span>CGST (9%)</span>
+                     <span className="text-text-primary">₹ {cgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[13px] font-bold text-text-secondary">
+                     <span>SGST (9%)</span>
+                     <span className="text-text-primary">₹ {sgstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between items-center text-[13px] font-bold text-text-secondary">
+                   <span>IGST (18%)</span>
+                   <span className="text-text-primary">₹ {igstAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-[13px] font-bold text-text-secondary">
+                 <span>ROUND OFF (+/-)</span>
+                 <span className={roundOff >= 0 ? "text-emerald-500" : "text-red-500"}>{roundOff > 0 ? '+' : ''} ₹ {Math.abs(roundOff).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-[15px] font-black text-text-primary uppercase tracking-wider mt-2 pt-3 border-t border-border">
+                 <span>NET PAYABLE</span>
+                 <span className="text-[20px]">₹ {netPayable.toLocaleString()}</span>
+              </div>
            </div>
         </div>
 

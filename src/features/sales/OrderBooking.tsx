@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, X, Save, Pencil, Trash2, FileText, Printer, FileSpreadsheet, Upload, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { purchaseApi } from '../../services/api/purchase';
+import { masterApi } from '../../services/api/master';
 import { salesApi } from '../../services/api/sales';
 
 export const OrderBookingPage: React.FC = () => {
@@ -21,8 +21,8 @@ export const OrderBookingPage: React.FC = () => {
 
   useEffect(() => {
     // Fetch dropdown data
-    purchaseApi.getAccounts().then(res => setParties(res.data)).catch(console.error);
-    purchaseApi.getItems().then(res => setItemsList(res.data)).catch(console.error);
+    masterApi.accounts.list().then(res => setParties(res)).catch(console.error);
+    masterApi.items.list().then(res => setItemsList(res)).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -66,17 +66,17 @@ export const OrderBookingPage: React.FC = () => {
     try {
       const payload = {
         date: bookingDate,
-        order_no: orderNo,
-        party_id: partyId,
+        booking_order_no: orderNo,
+        party: partyId,
         vehicle_no: vehicleNo,
         items: items.map(item => ({
-          item_id: item.item_id,
+          item: item.item_id,
           pcs_kg: item.pcs_kg,
           pcs: item.pcs,
           quantity: item.quantity,
           rate: item.rate,
           scrap: item.scrap,
-          net_amount: item.net_amount
+          amount: item.net_amount
         }))
       };
 
@@ -102,12 +102,17 @@ export const OrderBookingPage: React.FC = () => {
       
       setEditingId(id);
       setBookingDate(order.date || new Date().toISOString().split('T')[0]);
-      setOrderNo(order.order_no || '');
-      setPartyId(order.party_id || '');
+      setOrderNo(order.booking_order_no || order.order_no || '');
+      setPartyId(order.party || order.party_id || '');
       setVehicleNo(order.vehicle_no || '');
       
       if (order.items && order.items.length > 0) {
-        setItems(order.items.map((i: any) => ({ ...i, id: i.id || Date.now() + Math.random() })));
+        setItems(order.items.map((i: any) => ({ 
+          ...i, 
+          id: i.id || Date.now() + Math.random(),
+          item_id: i.item || i.item_id || '',
+          net_amount: i.amount || i.net_amount || 0
+        })));
       } else {
         setItems([{ id: 1, item_id: '', pcs_kg: '0', pcs: 0, quantity: 0, rate: 0, scrap: 0, net_amount: 0 }]);
       }
@@ -228,24 +233,26 @@ export const OrderBookingPage: React.FC = () => {
                     <th className="py-4 px-5">DATE</th>
                     <th className="py-4 px-5">ORDER NO.</th>
                     <th className="py-4 px-5">PARTY</th>
-                    <th className="py-4 px-5">VEHICLE NO.</th>
+                    <th className="py-4 px-5">AMOUNT</th>
                     <th className="py-4 px-5 text-center">STATUS</th>
                     <th className="py-4 px-5 text-center">ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {orders.map((order) => {
-                    const partyName = Array.isArray(parties) ? (parties.find(p => p.id === order.party_id)?.name || parties.find(p => p.id === order.party_id)?.account_name || order.party_id) : order.party_id;
+                    const partyId = order.party || order.party_id;
+                    const partyName = Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId;
                     const dateStr = order.date ? new Date(order.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
                     // Pseudo status logic
                     const isCompleted = order.status === 'COMPLETED';
+                    const listAmount = order.total_amount || (order.items || []).reduce((sum: number, i: any) => sum + (Number(i.amount) || 0), 0);
                     return (
                       <tr key={order.id} className="hover:bg-input/50 transition-colors">
                         <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-border" /></td>
                         <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
-                        <td className="py-4 px-5 text-text-primary">{order.order_no || '--'}</td>
+                        <td className="py-4 px-5 text-text-primary">{order.booking_order_no || order.order_no || '--'}</td>
                         <td className="py-4 px-5 text-text-primary uppercase">{partyName || '--'}</td>
-                        <td className="py-4 px-5 text-text-secondary">{order.vehicle_no || '--'}</td>
+                        <td className="py-4 px-5 text-text-secondary font-bold">₹ {Number(listAmount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                         <td className="py-4 px-5 text-center">
                           {isCompleted ? (
                             <span className="px-2.5 py-1 text-[10px] border border-emerald-500 text-emerald-600 rounded bg-emerald-50 font-black uppercase tracking-wider">COMPLETED</span>

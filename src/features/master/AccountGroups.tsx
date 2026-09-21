@@ -15,7 +15,7 @@ export const AccountGroupsPage = () => {
       ]}
       formFields={[
         { name: 'name', label: 'Group Name', type: 'text', required: true },
-        { name: 'account_type', label: 'Account Type', type: 'text' },
+        { name: 'account_type', label: 'Account Type', type: 'text', required: true },
         { name: 'annx_no', label: 'Annexure No.', type: 'number' },
       ]}
     />
