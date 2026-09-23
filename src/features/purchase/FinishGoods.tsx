@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Save, Pencil, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { purchaseApi } from '../../services/api/purchase';
+import { Table } from '../../components/ui/Table';
 
 export const FinishGoodsPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -192,50 +193,45 @@ export const FinishGoodsPage = () => {
         </div>
 
         <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
-          {finishGoodsList.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-[15px] font-black text-text-secondary uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">You haven't recorded any entries yet. Click "New Entry" to get started.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px] font-bold">
-                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-                  <tr>
-                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
-                    <th className="py-4 px-4">DATE</th>
-                    <th className="py-4 px-4">ENTRY NO</th>
-                    <th className="py-4 px-4">RAW ITEM</th>
-                    <th className="py-4 px-4">MAKE ITEM</th>
-                    <th className="py-4 px-4 text-center">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {finishGoodsList.map((fg) => {
-                    const dateStr = fg.date ? new Date(fg.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                    return (
-                      <tr key={fg.id} className="hover:bg-input/50 transition-colors">
-                        <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-border" /></td>
-                        <td className="py-4 px-4 text-text-secondary">{dateStr}</td>
-                        <td className="py-4 px-4 font-bold text-[#4338CA]">{fg.entry_no || '-'}</td>
-                        <td className="py-4 px-4 text-text-primary">{fg.raw_item_name || '-'} ({fg.raw_quantity || 0})</td>
-                        <td className="py-4 px-4 text-text-primary uppercase">{fg.make_item_name || '-'} ({fg.make_quantity || 0})</td>
-                        <td className="py-4 px-4 text-center">
-                          <div className="flex justify-center items-center gap-2">
-                            <button onClick={() => handleEdit(fg.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                            <button onClick={() => handleDelete(fg.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <Table 
+            data={finishGoodsList} 
+            columns={[
+              {
+                key: 'date',
+                header: 'DATE',
+                render: (fg: any) => fg.date ? new Date(fg.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'entry_no',
+                header: 'ENTRY NO',
+                render: (fg: any) => <span className="font-bold text-[#4338CA]">{fg.entry_no || '-'}</span>
+              },
+              {
+                key: 'raw_item_name',
+                header: 'RAW ITEM',
+                render: (fg: any) => <span>{fg.raw_item_name || '-'} ({fg.raw_quantity || 0})</span>
+              },
+              {
+                key: 'make_item_name',
+                header: 'MAKE ITEM',
+                render: (fg: any) => <span className="uppercase">{fg.make_item_name || '-'} ({fg.make_quantity || 0})</span>
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (fg: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(fg.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(fg.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="Finish_Goods" 
+            searchKey="entry_no" 
+            searchPlaceholder="SEARCH ENTRY..." 
+          />
         </div>
       </div>
     );

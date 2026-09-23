@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { purchaseApi } from '../../services/api/purchase';
+import { Table } from '../../components/ui/Table';
 
 export const GRNItemsPage: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     purchaseApi.getGRNs().then(res => {
       // Assuming the API returns GRNs and we extract items, or we just map GRNs
       setData(res.data?.results || res.data || []);
-      setLoading(false);
     }).catch(err => {
       console.error(err);
-      setLoading(false);
     });
   }, []);
   return (
@@ -32,42 +30,55 @@ export const GRNItemsPage: React.FC = () => {
       </div>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border/60 overflow-hidden">
-        <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#0F172A] text-white font-bold uppercase tracking-wider">
-            <tr>
-              <th className="py-4 px-5">Challan No.</th>
-              <th className="py-4 px-5">Purchase Bill No.</th>
-              <th className="py-4 px-5">Date</th>
-              <th className="py-4 px-5">Supplier / Party Name</th>
-              <th className="py-4 px-5">Raw Item (GRN)</th>
-              <th className="py-4 px-5 text-center">Size</th>
-              <th className="py-4 px-5 text-right">Quantity</th>
-              <th className="py-4 px-5 text-right">Vehicle No.</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {loading ? (
-              <tr><td colSpan={8} className="py-8 text-center text-text-secondary">Loading data...</td></tr>
-            ) : data.length === 0 ? (
-              <tr><td colSpan={8} className="py-8 text-center text-text-secondary">No GRN items found.</td></tr>
-            ) : (
-              data.flatMap((grn: any) => 
-                (grn.items || []).map((item: any, idx: number) => (
-                  <tr key={`${grn.id}-${idx}`} className="hover:bg-input/50 transition-colors">
-                    <td className="py-4 px-5 text-text-secondary uppercase">{grn.grn_no || `GRN-${grn.id}`}</td>
-                    <td className="py-4 px-5 font-bold text-[#1E293B]">{grn.purchase_no || '--'}</td>
-                    <td className="py-4 px-5 text-text-secondary">{grn.date || '--'}</td>
-                    <td className="py-4 px-5 font-bold text-[#1E293B]">{grn.party_name || '--'}</td>
-                    <td className="py-4 px-5 font-bold text-[#E11D48] uppercase">{item.item_name || 'ITEM'}</td>
-                    <td className="py-4 px-5 text-center text-text-muted">---</td>
-                    <td className="py-4 px-5 text-right font-black text-[#E11D48]">{item.quantity || '0.00'}</td>
-                    <td className="py-4 px-5 text-right text-[10px] text-text-muted font-medium">{grn.vehicle_no || '--'}</td>
-                  </tr>
-                ))
-              )
-            )}
-          </tbody>
-        </table>
+        <Table 
+          data={useMemo(() => data.flatMap((grn: any) => (grn.items || []).map((item: any, idx: number) => ({ ...grn, item, _id: `${grn.id}-${idx}` }))), [data])} 
+          rowKey={(row: any) => row._id}
+          columns={[
+            {
+              key: 'grn_no_display',
+              header: 'Challan No.',
+              render: (row: any) => <span className="uppercase">{row.grn_no || `GRN-${row.id}`}</span>
+            },
+            {
+              key: 'purchase_no',
+              header: 'Purchase Bill No.',
+              render: (row: any) => <span className="font-bold text-[#1E293B]">{row.purchase_no || '--'}</span>
+            },
+            {
+              key: 'date',
+              header: 'Date',
+              render: (row: any) => row.date || '--'
+            },
+            {
+              key: 'party_name',
+              header: 'Supplier / Party Name',
+              render: (row: any) => <span className="font-bold text-[#1E293B]">{row.party_name || '--'}</span>
+            },
+            {
+              key: 'item_name',
+              header: 'Raw Item (GRN)',
+              render: (row: any) => <span className="font-bold text-[#E11D48] uppercase">{row.item?.item_name || 'ITEM'}</span>
+            },
+            {
+              key: 'size',
+              header: 'Size',
+              render: () => <span className="text-text-muted">---</span>
+            },
+            {
+              key: 'quantity',
+              header: 'Quantity',
+              render: (row: any) => <span className="font-black text-[#E11D48]">{row.item?.quantity || '0.00'}</span>
+            },
+            {
+              key: 'vehicle_no',
+              header: 'Vehicle No.',
+              render: (row: any) => <span className="text-[10px] text-text-muted font-medium">{row.vehicle_no || '--'}</span>
+            }
+          ]}
+          exportFilename="GRN_Item_Ledger" 
+          searchKey="party_name" 
+          searchPlaceholder="Search Party..." 
+        />
       </div>
 
     </div>

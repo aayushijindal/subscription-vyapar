@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, X, Save, Pencil, Trash2, Download, FileText, Printer, FileSpreadsheet, Upload } from 'lucide-react';
+import { Plus, X, Save, Pencil, Trash2, Upload, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { purchaseApi } from '@/services/api/purchase';
+import { Table } from '../../components/ui/Table';
 
 export const GRNsPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -12,6 +13,10 @@ export const GRNsPage = () => {
   const [itemsList, setItemsList] = useState<any[]>([]);
   const [grnsList, setGrnsList] = useState<any[]>([]);
 
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isMasterLoading, setIsMasterLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Form State
   const [purchaseId, setPurchaseId] = useState('');
   const [challanNo, setChallanNo] = useState('');
@@ -21,6 +26,8 @@ export const GRNsPage = () => {
   const [items, setItems] = useState<any[]>([{ id: 1, item_id: '', nos: 0, quantity: 0, rate: 0, amount: 0 }]);
 
   const fetchData = async () => {
+    setIsTableLoading(true);
+    setIsMasterLoading(true);
     try {
       const [pRes, aRes, iRes, gRes] = await Promise.all([
         purchaseApi.getPurchases(),
@@ -35,6 +42,9 @@ export const GRNsPage = () => {
     } catch (err) {
       console.error(err);
       toast.error('Error fetching data');
+    } finally {
+      setIsTableLoading(false);
+      setIsMasterLoading(false);
     }
   };
 
@@ -113,6 +123,7 @@ export const GRNsPage = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const payload = {
         purchase: purchaseId || null,
@@ -141,6 +152,8 @@ export const GRNsPage = () => {
     } catch (err) {
       console.error(err);
       toast.error('Error saving GRN. Check details.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -153,16 +166,6 @@ export const GRNsPage = () => {
             <p className="text-[11px] font-bold text-text-muted uppercase mt-0.5">Manage goods receipt notes</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search GRN..." className="w-[200px] bg-input border border-border focus:border-[#1E293B] focus:bg-surface rounded-xl pl-9 pr-4 py-2 text-[12px] font-medium outline-none transition-all" />
-            </div>
-            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
-              <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
-            </button>
-            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
-              <FileText className="w-3.5 h-3.5" /> PDF
-            </button>
             <button className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <Upload className="w-3.5 h-3.5" /> Import
             </button>
@@ -173,55 +176,50 @@ export const GRNsPage = () => {
         </div>
 
         <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
-          {grnsList.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-[15px] font-black text-text-secondary uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">You haven't recorded any entries yet. Click "Add New" to get started.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px] font-bold">
-                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-                  <tr>
-                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
-                    <th className="py-4 px-4">DATE</th>
-                    <th className="py-4 px-4">PURCHASE BILL NO</th>
-                    <th className="py-4 px-4">CHALLAN NO</th>
-                    <th className="py-4 px-4">PARTY</th>
-                    <th className="py-4 px-4 text-center">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {grnsList.map((grn) => {
-                    const partyId = grn.party_id || grn.party;
-                    const partyName = grn.party_name || (Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId);
-                    const dateStr = grn.grn_date || grn.date ? new Date(grn.grn_date || grn.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                    return (
-                    <tr key={grn.id} className="hover:bg-input/50 transition-colors">
-                      <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-border" /></td>
-                      <td className="py-4 px-4 text-text-secondary">{dateStr}</td>
-                      <td className="py-4 px-4 font-bold text-[#4338CA]">{grn.purchase_no_display || '-'}</td>
-                      <td className="py-4 px-4 text-[#1E293B]">{grn.grn_no || grn.challan_no || '-'}</td>
-                      <td className="py-4 px-4 text-[#1E293B] uppercase">{partyName || '-'}</td>
-                      <td className="py-4 px-4 text-center">
-                        <div className="flex justify-center items-center gap-2">
-                          <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded transition-colors"><Download className="w-3.5 h-3.5" /></button>
-                          <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded transition-colors"><FileText className="w-3.5 h-3.5" /></button>
-                          <button className="text-text-secondary hover:text-text-secondary bg-background p-1.5 rounded transition-colors"><Printer className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleEdit(grn.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleDelete(grn.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                        </div>
-                      </td>
-                    </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <Table 
+            data={grnsList} 
+            isLoading={isTableLoading}
+            columns={[
+              {
+                key: 'grn_date',
+                header: 'DATE',
+                render: (grn: any) => grn.grn_date || grn.date ? new Date(grn.grn_date || grn.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'purchase_no_display',
+                header: 'PURCHASE BILL NO',
+                render: (grn: any) => <span className="font-bold text-[#4338CA]">{grn.purchase_no_display || '-'}</span>
+              },
+              {
+                key: 'grn_no',
+                header: 'CHALLAN NO',
+                render: (grn: any) => grn.grn_no || grn.challan_no || '-'
+              },
+              {
+                key: 'party_name',
+                header: 'PARTY',
+                render: (grn: any) => {
+                  const partyId = grn.party_id || grn.party;
+                  const partyName = grn.party_name || (Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId);
+                  return <span className="uppercase">{partyName || '-'}</span>;
+                }
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (grn: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(grn.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(grn.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="GRN_List" 
+            searchKey="grn_no" 
+            searchPlaceholder="Search Challan No..." 
+          />
         </div>
       </div>
     );
@@ -246,8 +244,8 @@ export const GRNsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 mb-10">
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Purchase Bill No</label>
-              <select value={purchaseId} onChange={(e) => setPurchaseId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
-                <option value="">SELECT BILL</option>
+              <select disabled={isMasterLoading} value={purchaseId} onChange={(e) => setPurchaseId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
+                <option value="">{isMasterLoading ? 'Loading...' : 'SELECT BILL'}</option>
                 {purchasesList.map((p: any) => <option key={p.id} value={p.id}>{p.invoice_no || p.purchase_no}</option>)}
               </select>
             </div>
@@ -261,8 +259,8 @@ export const GRNsPage = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-[#1E293B] uppercase tracking-wider">Party <span className="text-red-500">*</span></label>
-              <select value={partyId} onChange={(e) => setPartyId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
-                <option value="">SELECT PARTY</option>
+              <select disabled={isMasterLoading} value={partyId} onChange={(e) => setPartyId(e.target.value)} className="w-full bg-surface border border-border focus:border-[#4338CA] focus:ring-1 focus:ring-[#4338CA] rounded-lg p-2.5 text-[13px] text-text-secondary transition-all outline-none">
+                <option value="">{isMasterLoading ? 'Loading...' : 'SELECT PARTY'}</option>
                 {parties.map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
               </select>
             </div>
@@ -300,8 +298,8 @@ export const GRNsPage = () => {
                   <tr key={item.id} className="hover:bg-input/50 transition-colors">
                     <td className="py-3 px-4 text-center font-medium text-[#4338CA]">{idx + 1}</td>
                     <td className="py-3 px-4">
-                      <select value={item.item_id || item.item || ''} onChange={(e) => updateItem(item.id, 'item_id', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-text-secondary outline-none focus:border-[#4338CA]">
-                        <option value="">-- SELECT ITEM --</option>
+                      <select disabled={isMasterLoading} value={item.item_id || item.item || ''} onChange={(e) => updateItem(item.id, 'item_id', e.target.value)} className="w-full bg-surface border border-border rounded-md p-2 text-[13px] text-text-secondary outline-none focus:border-[#4338CA]">
+                        <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT ITEM --'}</option>
                         {itemsList.map((i: any) => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                       </select>
                     </td>
@@ -329,11 +327,11 @@ export const GRNsPage = () => {
           </div>
 
           <div className="flex items-center justify-end gap-4 pt-6 border-t border-border/50">
-            <button onClick={() => setIsFormOpen(false)} className="text-[12px] font-bold text-text-secondary hover:text-text-secondary uppercase tracking-wider px-4 py-2">
+            <button onClick={() => setIsFormOpen(false)} disabled={isSubmitting} className="text-[12px] font-bold text-text-secondary hover:text-text-secondary uppercase tracking-wider px-4 py-2 disabled:opacity-50">
               Cancel
             </button>
-            <button onClick={handleSubmit} className="bg-[#0F172A] hover:bg-black text-white px-8 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm transition-colors">
-              <Save className="w-4 h-4" /> {editingId ? 'Update GRN' : 'Save GRN'}
+            <button onClick={handleSubmit} disabled={isSubmitting} className="bg-[#0F172A] hover:bg-black text-white px-8 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm transition-colors disabled:opacity-50">
+              {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> SAVING...</> : <><Save className="w-4 h-4" /> {editingId ? 'Update GRN' : 'Save GRN'}</>}
             </button>
           </div>
           

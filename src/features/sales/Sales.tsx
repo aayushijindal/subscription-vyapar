@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, X, Save, Pencil, Trash2, ArrowLeft, Download, FileText, Printer, FileSpreadsheet, Eye } from 'lucide-react';
+import { Plus, X, Save, Pencil, Trash2, ArrowLeft, Download, Printer, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { salesApi } from '../../services/api/sales';
 import { masterApi } from '../../services/api/master';
+import { Table } from '../../components/ui/Table';
 
 export const SalesPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -10,8 +11,10 @@ export const SalesPage: React.FC = () => {
   const [itemsList, setItemsList] = useState<any[]>([]);
   const [transports, setTransports] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMasterLoading, setIsMasterLoading] = useState(true);
 
   // Form State
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -49,15 +52,14 @@ export const SalesPage: React.FC = () => {
   const [loadingAmt, setLoadingAmt] = useState('0.00');
 
   const fetchSales = async () => {
-    await Promise.resolve(); // Defer state update to avoid sync state update within effect
-    setIsLoading(true);
+    setIsTableLoading(true);
     try {
       const res = await salesApi.sales.list();
       setSales(Array.isArray(res) ? res : (res as any).results || []);
     } catch (err) {
       console.error(err);
     } finally {
-      setIsLoading(false);
+      setIsTableLoading(false);
     }
   };
 
@@ -71,9 +73,22 @@ export const SalesPage: React.FC = () => {
   }, [isFormOpen]);
 
   useEffect(() => {
-    masterApi.accounts.list().then(res => setAccounts(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
-    masterApi.items.list().then(res => setItemsList(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
-    masterApi.transports.list().then(res => setTransports(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
+    const fetchMaster = async () => {
+      setIsMasterLoading(true);
+      Promise.all([
+        masterApi.accounts.list(),
+        masterApi.items.list(),
+        masterApi.transports.list()
+      ])
+      .then(([accRes, itemsRes, transRes]) => {
+        setAccounts(Array.isArray(accRes) ? accRes : (accRes as any)?.results || []);
+        setItemsList(Array.isArray(itemsRes) ? itemsRes : (itemsRes as any)?.results || []);
+        setTransports(Array.isArray(transRes) ? transRes : (transRes as any)?.results || []);
+      })
+      .catch(console.error)
+      .finally(() => setIsMasterLoading(false));
+    };
+    fetchMaster();
   }, []);
 
   const handleAddItem = () => {
@@ -131,6 +146,7 @@ export const SalesPage: React.FC = () => {
       return;
     }
     try {
+      setIsSubmitting(true);
       const payload = {
         invoice_no: invoiceNo,
         invoice_date: invoiceDate || null,
@@ -182,6 +198,8 @@ export const SalesPage: React.FC = () => {
     } catch (err) {
       toast.error('Error saving sales entry. Please check mandatory fields.');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -286,16 +304,6 @@ export const SalesPage: React.FC = () => {
             <p className="text-[11px] font-bold text-text-secondary uppercase mt-0.5 tracking-wider">Manage Sales Invoices</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
-            <div className="relative">
-              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search Invoice..." className="pl-9 pr-4 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:border-primary" />
-            </div>
-            <button onClick={() => toast.success(`Exporting ${selectedIds.length} items to Excel (In Dev)`)} disabled={selectedIds.length === 0} className={`px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border ${selectedIds.length ? 'bg-input hover:bg-border/30 text-text-primary' : 'bg-input text-text-muted opacity-50 cursor-not-allowed'}`}>
-               <FileSpreadsheet className="w-4 h-4" /> Excel
-            </button>
-            <button onClick={() => toast.success(`Exporting ${selectedIds.length} items to PDF (In Dev)`)} disabled={selectedIds.length === 0} className={`px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border ${selectedIds.length ? 'bg-input hover:bg-border/30 text-text-primary' : 'bg-input text-text-muted opacity-50 cursor-not-allowed'}`}>
-               <FileText className="w-4 h-4" /> PDF
-            </button>
             <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                <Download className="w-4 h-4" /> Import
             </button>
@@ -305,89 +313,84 @@ export const SalesPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-x-auto">
-          <table className="w-full text-left text-[12px] font-bold">
-            <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-              <tr>
-                <th className="py-4 px-5 w-[40px] text-center">
-                  <input type="checkbox" checked={sales.length > 0 && selectedIds.length === sales.length} onChange={(e) => setSelectedIds(e.target.checked ? sales.map(s => s.id) : [])} className="rounded border-border" />
-                </th>
-                <th className="py-4 px-5">DATE</th>
-                <th className="py-4 px-5">INVOICE NO</th>
-                <th className="py-4 px-5">BUYER</th>
-                <th className="py-4 px-5">GRAND TOTAL</th>
-                <th className="py-4 px-5 text-center">E-INVOICE</th>
-                <th className="py-4 px-5 text-center">E-WAY BILL</th>
-                <th className="py-4 px-5 text-center">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-text-secondary font-medium">Loading sales entries...</td>
-                </tr>
-              ) : sales.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-text-secondary font-medium">No sales found.</td>
-                </tr>
-              ) : sales.map((sale) => {
-                const buyerId = sale.buyer || sale.buyer_id || sale.party_id;
-                const partyName = accounts.find(p => p.id === buyerId)?.name || accounts.find(p => p.id === buyerId)?.account_name || 'UNKNOWN';
-                const dateStr = sale.invoice_date ? new Date(sale.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                
-                const eInvoiceActive = sale.irn && sale.irn.length > 5;
-                const ewbActive = sale.eway_bill_no && sale.eway_bill_no.length > 2;
-                return (
-                  <tr key={sale.id} className="hover:bg-input/50 transition-colors">
-                    <td className="py-4 px-5 text-center">
-                      <input type="checkbox" checked={selectedIds.includes(sale.id)} onChange={() => setSelectedIds(prev => prev.includes(sale.id) ? prev.filter(id => id !== sale.id) : [...prev, sale.id])} className="rounded border-border" />
-                    </td>
-                    <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
-                    <td className="py-4 px-5 text-text-primary text-[13px]">{sale.invoice_no || '--'}</td>
-                    <td className="py-4 px-5 text-text-primary uppercase">{partyName}</td>
-                    <td className="py-4 px-5 text-text-primary">₹ {Number(sale.grand_total || 0).toLocaleString()}</td>
-                    <td className="py-4 px-5 text-center">
-                      {eInvoiceActive ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-border text-text-secondary rounded-full bg-input font-black uppercase tracking-wider">
-                           NOT GENERATED
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-4 px-5 text-center flex flex-col items-center justify-center gap-1">
-                      {ewbActive ? (
-                        <>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
-                          </span>
-                          <span className="text-[10px] text-primary flex items-center gap-1 cursor-pointer hover:underline bg-primary-light px-2 py-0.5 rounded border border-primary/20">
-                            <Printer className="w-3 h-3"/> Print
-                          </span>
-                        </>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-border text-text-secondary rounded-full bg-input font-black uppercase tracking-wider">
-                           NOT GENERATED
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-4 px-5 text-center">
-                      <div className="flex justify-center items-center gap-2">
-                        <button onClick={() => handleEdit(sale.id)} className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                        <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded border border-emerald-100 transition-colors"><Download className="w-3.5 h-3.5" /></button>
-                        <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded border border-rose-100 transition-colors"><FileText className="w-3.5 h-3.5" /></button>
-                        <button className="text-text-secondary hover:text-text-secondary bg-input p-1.5 rounded border border-border transition-colors"><Printer className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleEdit(sale.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDelete(sale.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
+          <Table 
+            data={sales} 
+            isLoading={isTableLoading}
+            columns={[
+              {
+                key: 'invoice_date',
+                header: 'DATE',
+                render: (p: any) => p.invoice_date ? new Date(p.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'invoice_no',
+                header: 'INVOICE NO',
+                render: (p: any) => p.invoice_no || '--'
+              },
+              {
+                key: 'party_name',
+                header: 'BUYER',
+                render: (p: any) => {
+                  const buyerId = p.buyer || p.buyer_id || p.party_id;
+                  const partyName = accounts.find(a => a.id === buyerId)?.name || accounts.find(a => a.id === buyerId)?.account_name || 'UNKNOWN';
+                  return <span className="uppercase">{partyName}</span>;
+                }
+              },
+              {
+                key: 'grand_total',
+                header: 'GRAND TOTAL',
+                render: (p: any) => `₹ ${Number(p.grand_total || 0).toLocaleString()}`
+              },
+              {
+                key: 'e_invoice',
+                header: 'E-INVOICE',
+                exportable: false,
+                render: (p: any) => p.irn && p.irn.length > 5 ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-border text-text-secondary rounded-full bg-input font-black uppercase tracking-wider">
+                     NOT GENERATED
+                  </span>
+                )
+              },
+              {
+                key: 'e_way_bill',
+                header: 'E-WAY BILL',
+                exportable: false,
+                render: (p: any) => p.eway_bill_no && p.eway_bill_no.length > 2 ? (
+                  <div className="flex flex-col items-center justify-center gap-1">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-emerald-400 text-emerald-600 rounded-full bg-emerald-50 font-black uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> ACTIVE
+                    </span>
+                    <span className="text-[10px] text-primary flex items-center gap-1 cursor-pointer hover:underline bg-primary-light px-2 py-0.5 rounded border border-primary/20">
+                      <Printer className="w-3 h-3"/> Print
+                    </span>
+                  </div>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] border border-border text-text-secondary rounded-full bg-input font-black uppercase tracking-wider">
+                     NOT GENERATED
+                  </span>
+                )
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (sale: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(sale.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(sale.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="Sales" 
+            searchKey="invoice_no" 
+            searchPlaceholder="Search Invoice..." 
+          />
         </div>
       </div>
     );
@@ -455,8 +458,8 @@ export const SalesPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>BUYER <span className="text-red-500">*</span></label>
-            <select value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass} required>
-              <option value="">-- SELECT BUYER --</option>
+            <select disabled={isMasterLoading} value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass} required>
+              <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT BUYER --'}</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.name || a.account_name}</option>)}
             </select>
           </div>
@@ -467,8 +470,8 @@ export const SalesPage: React.FC = () => {
 
           <div>
             <label className={labelClass}>CONSIGNEE</label>
-            <select value={consigneeId} onChange={e => setConsigneeId(Number(e.target.value))} className={inputClass}>
-              <option value="">-- SELECT CONSIGNEE --</option>
+            <select disabled={isMasterLoading} value={consigneeId} onChange={e => setConsigneeId(Number(e.target.value))} className={inputClass}>
+              <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT CONSIGNEE --'}</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.name || a.account_name}</option>)}
             </select>
           </div>
@@ -490,8 +493,8 @@ export const SalesPage: React.FC = () => {
 
           <div>
             <label className={labelClass}>TRANSPORT</label>
-            <select value={transport} onChange={e => setTransport(e.target.value)} className={inputClass}>
-              <option value="">-- SELECT TRANSPORT --</option>
+            <select disabled={isMasterLoading} value={transport} onChange={e => setTransport(e.target.value)} className={inputClass}>
+              <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT TRANSPORT --'}</option>
               {transports.map(t => <option key={t.id} value={t.id}>{t.name || t.transport_name}</option>)}
             </select>
           </div>
@@ -638,10 +641,10 @@ export const SalesPage: React.FC = () => {
               </div>
 
               <div className="pt-4 flex gap-3">
-                 <button onClick={handleSubmit} className="flex-1 bg-primary hover:bg-primary-hover text-white py-3 rounded-lg text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors">
-                    <Save className="w-4 h-4" /> {editingId ? 'UPDATE ENTRY' : 'SAVE ENTRY'}
+                 <button onClick={handleSubmit} disabled={isSubmitting} className="flex-1 bg-primary hover:bg-primary-hover text-white py-3 rounded-lg text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50">
+                    {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> SAVING...</> : <><Save className="w-4 h-4" /> {editingId ? 'UPDATE ENTRY' : 'SAVE ENTRY'}</>}
                  </button>
-                 <button onClick={() => setIsFormOpen(false)} className="px-6 bg-background hover:bg-slate-200 text-text-primary py-3 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors">
+                 <button onClick={() => setIsFormOpen(false)} disabled={isSubmitting} className="px-6 bg-background hover:bg-slate-200 text-text-primary py-3 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors disabled:opacity-50">
                     CANCEL
                  </button>
               </div>

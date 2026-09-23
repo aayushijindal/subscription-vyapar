@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { purchaseApi } from '../../services/api/purchase';
+import { Table } from '../../components/ui/Table';
 
 export const FinishGoodsListPage: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     purchaseApi.getFinishGoodsList().then(res => {
       setData(res.data?.results || res.data || []);
-      setLoading(false);
     }).catch(err => {
       console.error(err);
-      setLoading(false);
     });
   }, []);
   return (
@@ -34,46 +32,64 @@ export const FinishGoodsListPage: React.FC = () => {
       </div>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border/60 overflow-hidden">
-        <table className="w-full text-left text-[11px]">
-          <thead className="bg-background text-text-secondary font-bold uppercase tracking-wider border-b border-border/60">
-            <tr>
-              <th className="py-4 px-5 w-[140px]">Date</th>
-              <th className="py-4 px-5 w-[180px]">Party & Bill Details</th>
-              <th className="py-4 px-5 text-[#E11D48] flex items-center gap-2"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Raw Consumed</th>
-              <th className="py-4 px-5 w-[100px] text-center text-[#E11D48]">Qty</th>
-              <th className="py-4 px-5 text-[#10B981] flex items-center gap-2"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg> Finish Produced</th>
-              <th className="py-4 px-5 w-[100px] text-center text-[#10B981]">Qty</th>
-              <th className="py-4 px-5 w-[100px] text-center text-[#EA580C]">Scrap</th>
-              <th className="py-4 px-5 w-[250px]">Remarks</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {loading ? (
-              <tr><td colSpan={8} className="py-8 text-center text-text-secondary">Loading data...</td></tr>
-            ) : data.length === 0 ? (
-              <tr><td colSpan={8} className="py-8 text-center text-text-secondary">No finish goods entries found.</td></tr>
-            ) : (
-              data.map((item: any, i: number) => (
-                <tr key={item.id || i} className="hover:bg-input/50 transition-colors">
-                  <td className="py-4 px-5">
-                    <div className="font-bold text-[#1E293B]">{item.date || '--'}</div>
-                    <div className="text-[10px] text-text-muted mt-0.5">{item.id ? `FG/${item.id}` : '--'}</div>
-                  </td>
-                  <td className="py-4 px-5">
-                    <div className="font-bold text-[#1E293B]">{item.party_name || '--'}</div>
-                    <div className="text-[10px] text-text-muted mt-0.5 uppercase">BILL: {item.bill_no || '--'}</div>
-                  </td>
-                  <td className="py-4 px-5 font-bold text-[#E11D48] uppercase">{item.raw_item_name || 'RAW ITEM'}</td>
-                  <td className="py-4 px-5 text-center font-black text-[#E11D48]">{item.raw_quantity || '0'}</td>
-                  <td className="py-4 px-5 font-bold text-[#10B981] uppercase">{item.make_item_name || 'FINISH ITEM'}</td>
-                  <td className="py-4 px-5 text-center font-black text-[#10B981]">{item.make_quantity || '0'}</td>
-                  <td className="py-4 px-5 text-center font-black text-[#EA580C]">{item.scrap_quantity || '0'}</td>
-                  <td className="py-4 px-5 text-text-secondary">{item.remarks || '--'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <Table 
+          data={data}
+          columns={[
+            {
+              key: 'date',
+              header: 'Date',
+              render: (item: any) => (
+                <div>
+                  <div className="font-bold text-[#1E293B]">{item.date || '--'}</div>
+                  <div className="text-[10px] text-text-muted mt-0.5">{item.id ? `FG/${item.id}` : '--'}</div>
+                </div>
+              )
+            },
+            {
+              key: 'party_name',
+              header: 'Party & Bill Details',
+              render: (item: any) => (
+                <div>
+                  <div className="font-bold text-[#1E293B]">{item.party_name || '--'}</div>
+                  <div className="text-[10px] text-text-muted mt-0.5 uppercase">BILL: {item.bill_no || '--'}</div>
+                </div>
+              )
+            },
+            {
+              key: 'raw_item_name',
+              header: 'Raw Consumed',
+              render: (item: any) => <span className="font-bold text-[#E11D48] uppercase">{item.raw_item_name || 'RAW ITEM'}</span>
+            },
+            {
+              key: 'raw_quantity',
+              header: 'Qty (Raw)',
+              render: (item: any) => <span className="font-black text-[#E11D48]">{item.raw_quantity || '0'}</span>
+            },
+            {
+              key: 'make_item_name',
+              header: 'Finish Produced',
+              render: (item: any) => <span className="font-bold text-[#10B981] uppercase">{item.make_item_name || 'FINISH ITEM'}</span>
+            },
+            {
+              key: 'make_quantity',
+              header: 'Qty (Finish)',
+              render: (item: any) => <span className="font-black text-[#10B981]">{item.make_quantity || '0'}</span>
+            },
+            {
+              key: 'scrap_quantity',
+              header: 'Scrap',
+              render: (item: any) => <span className="font-black text-[#EA580C]">{item.scrap_quantity || '0'}</span>
+            },
+            {
+              key: 'remarks',
+              header: 'Remarks',
+              render: (item: any) => item.remarks || '--'
+            }
+          ]}
+          exportFilename="Finish_Goods_List" 
+          searchKey="remarks" 
+          searchPlaceholder="Search Remarks..." 
+        />
       </div>
 
     </div>

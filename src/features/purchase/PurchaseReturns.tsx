@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Plus, Search, X, Save, Pencil, Trash2, Download, FileText, Printer, FileSpreadsheet, Upload } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, X, Save, Pencil, Trash2, Upload, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { purchaseApi } from '../../services/api/purchase';
-import { useEffect } from 'react';
+import { Table } from '../../components/ui/Table';
+
 export const PurchaseReturnsPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [parties, setParties] = useState<any>([]);
@@ -22,6 +23,10 @@ export const PurchaseReturnsPage: React.FC = () => {
   const [invoiceNo, setInvoiceNo] = useState('');
   const [partyId, setPartyId] = useState<number | ''>('');
 
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMasterLoading, setIsMasterLoading] = useState(true);
+
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
   const [vehicleNo, setVehicleNo] = useState('');
   const [orderNo, setOrderNo] = useState('');
@@ -39,16 +44,35 @@ export const PurchaseReturnsPage: React.FC = () => {
   
 
   useEffect(() => {
-    // Fetch master dropdowns
-    purchaseApi.getAccounts().then(res => setParties(res.data)).catch(console.error);
-    purchaseApi.getItems('RAW').then(res => setItemsList(res.data)).catch(console.error);
-    purchaseApi.getTransports().then(res => setTransports(res.data)).catch(console.error);
+    const fetchMaster = async () => {
+      setIsMasterLoading(true);
+      // Fetch master dropdowns
+      Promise.all([
+        purchaseApi.getAccounts(),
+        purchaseApi.getItems('RAW'),
+        purchaseApi.getTransports()
+      ])
+      .then(([accountsRes, itemsRes, transportsRes]) => {
+        setParties(accountsRes.data);
+        setItemsList(itemsRes.data);
+        setTransports(transportsRes.data);
+      })
+      .catch(console.error)
+      .finally(() => setIsMasterLoading(false));
+    };
+    fetchMaster();
   }, []);
 
   useEffect(() => {
     if (!isFormOpen) {
-      // Fetch list
-      purchaseApi.getPurchaseReturns().then(res => setPurchaseReturns(res.data.results || [])).catch(console.error);
+      const fetchList = async () => {
+        setIsTableLoading(true);
+        purchaseApi.getPurchaseReturns()
+          .then(res => setPurchaseReturns(res.data.results || []))
+          .catch(console.error)
+          .finally(() => setIsTableLoading(false));
+      };
+      fetchList();
     }
   }, [isFormOpen]);
 
@@ -107,6 +131,7 @@ export const PurchaseReturnsPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const payload = {
         party_id: partyId || 1,
@@ -155,8 +180,10 @@ export const PurchaseReturnsPage: React.FC = () => {
       setIsFormOpen(false);
       setEditingId(null);
     } catch (err) {
-      toast.error('Error saving purchaseReturn. Please check mandatory fields.');
+      toast.error('Error saving purchase return. Please check mandatory fields.');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -251,16 +278,6 @@ export const PurchaseReturnsPage: React.FC = () => {
             <p className="text-[11px] font-bold text-text-muted uppercase mt-0.5">Manage Purchase Returns</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search Invoice..." className="w-[200px] bg-input border border-border focus:border-[#1E293B] focus:bg-surface rounded-xl pl-9 pr-4 py-2 text-[12px] font-medium outline-none transition-all" />
-            </div>
-            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
-              <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
-            </button>
-            <button className="bg-slate-200 hover:bg-slate-300 text-text-secondary px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
-              <FileText className="w-3.5 h-3.5" /> PDF
-            </button>
             <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-1.5 transition-colors">
               <Upload className="w-3.5 h-3.5" /> Import
             </button>
@@ -271,56 +288,49 @@ export const PurchaseReturnsPage: React.FC = () => {
         </div>
 
         <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
-          {purchaseReturns.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-[15px] font-black text-text-secondary uppercase tracking-wide">No Entries Found</h3>
-              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">You haven't recorded any entries yet. Click "Add New" to get started.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px] font-bold">
-                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-                  <tr>
-                    <th className="py-4 px-4 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
-                    <th className="py-4 px-4">DATE</th>
-                    <th className="py-4 px-4">INVOICE NO</th>
-                    <th className="py-4 px-4">PARTY</th>
-                    <th className="py-4 px-4 text-right">GRAND TOTAL</th>
-                    
-                    <th className="py-4 px-4 text-center">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {purchaseReturns.map((purchaseReturn) => {
-                    const partyName = Array.isArray(parties) ? (parties.find(p => p.id === purchaseReturn.party_id)?.name || parties.find(p => p.id === purchaseReturn.party_id)?.account_name || purchaseReturn.party_id) : purchaseReturn.party_id;
-                    const dateStr = purchaseReturn.invoice_date ? new Date(purchaseReturn.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                    return (
-                    <tr key={purchaseReturn.id} className="hover:bg-input/50 transition-colors">
-                      <td className="py-4 px-4 text-center"><input type="checkbox" className="rounded border-border" /></td>
-                      <td className="py-4 px-4 text-text-secondary">{dateStr}</td>
-                      <td className="py-4 px-4 text-text-primary">{purchaseReturn.invoice_no || '-'}</td>
-                      <td className="py-4 px-4 text-text-primary uppercase">{partyName || '-'}</td>
-                      <td className="py-4 px-4 text-text-secondary text-right">₹ {purchaseReturn.grand_total ? Number(purchaseReturn.grand_total).toLocaleString('en-IN') : '0'}</td>
-                      
-                      <td className="py-4 px-4 text-center">
-                        <div className="flex justify-center items-center gap-2">
-                          <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-1.5 rounded transition-colors"><Download className="w-3.5 h-3.5" /></button>
-                          <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-1.5 rounded transition-colors"><FileText className="w-3.5 h-3.5" /></button>
-                          <button className="text-text-secondary hover:text-text-secondary bg-background p-1.5 rounded transition-colors"><Printer className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleEdit(purchaseReturn.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleDelete(purchaseReturn.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                        </div>
-                      </td>
-                    </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <Table 
+            data={purchaseReturns} 
+            isLoading={isTableLoading}
+            columns={[
+              {
+                key: 'invoice_date',
+                header: 'DATE',
+                render: (p: any) => p.invoice_date ? new Date(p.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'invoice_no',
+                header: 'INVOICE NO',
+                render: (p: any) => p.invoice_no || '-'
+              },
+              {
+                key: 'party_name',
+                header: 'PARTY',
+                render: (p: any) => {
+                  const name = Array.isArray(parties) ? (parties.find(x => x.id === p.party_id)?.name || parties.find(x => x.id === p.party_id)?.account_name || p.party_id) : p.party_id;
+                  return <span className="uppercase">{name || '-'}</span>;
+                }
+              },
+              {
+                key: 'grand_total',
+                header: 'GRAND TOTAL',
+                render: (p: any) => `₹ ${p.grand_total ? Number(p.grand_total).toLocaleString('en-IN') : '0'}`
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (p: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(p.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="Purchase_Returns" 
+            searchKey="invoice_no" 
+            searchPlaceholder="Search Invoice..." 
+          />
         </div>
       </div>
     );
@@ -409,8 +419,8 @@ export const PurchaseReturnsPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-primary uppercase tracking-wider">Book Name</label>
-              <select className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-text-muted transition-all outline-none">
-                <option value="">-- SELECT BOOK --</option>
+              <select disabled={isMasterLoading} className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-text-muted transition-all outline-none">
+                <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT BOOK --'}</option>
                 {(Array.isArray(parties) ? parties : parties?.results || []).map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
               </select>
             </div>
@@ -426,8 +436,8 @@ export const PurchaseReturnsPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-primary uppercase tracking-wider">Select Transport</label>
-              <select className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-text-muted transition-all outline-none">
-                <option value="">-- SELECT TRANSPORT --</option>
+              <select disabled={isMasterLoading} className="w-full bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-[#2b5f9d] rounded-lg p-2.5 text-[13px] text-text-muted transition-all outline-none">
+                <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT TRANSPORT --'}</option>
                 {(Array.isArray(transports) ? transports : transports?.results || []).map((t: any) => <option key={t.id} value={t.id}>{t.name || t.transport_name}</option>)}
               </select>
             </div>
@@ -594,9 +604,9 @@ export const PurchaseReturnsPage: React.FC = () => {
                 </div>
 
                 <div className="pt-4 flex items-center justify-end gap-4">
-                  <button onClick={() => setIsFormOpen(false)} className="text-[11px] font-bold text-text-muted hover:text-text-secondary uppercase tracking-wider">Cancel</button>
-                  <button onClick={handleSubmit} className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 transition-colors">
-                    <Save className="w-4 h-4" /> {editingId ? 'Update Purchase Return Bill' : 'Post Purchase Return Bill'}
+                  <button type="button" onClick={() => setIsFormOpen(false)} disabled={isSubmitting} className="text-[11px] font-bold text-text-muted hover:text-text-secondary uppercase tracking-wider disabled:opacity-50">Cancel</button>
+                  <button type="button" onClick={handleSubmit} disabled={isSubmitting} className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 transition-colors disabled:opacity-50">
+                    {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> {editingId ? 'Update Purchase Return Bill' : 'Post Purchase Return Bill'}</>}
                   </button>
                 </div>
               </div>

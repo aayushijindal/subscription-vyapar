@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, X, Save, Pencil, Trash2, ArrowLeft, Download, Eye } from 'lucide-react';
+import { Plus, X, Save, Pencil, Trash2, ArrowLeft, Download, Eye, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { salesApi } from '../../services/api/sales';
 import { masterApi } from '../../services/api/master';
+import { Table } from '../../components/ui/Table';
 
 export const SalesReturnsPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -17,19 +18,39 @@ export const SalesReturnsPage: React.FC = () => {
   const [returnDate, setReturnDate] = useState(new Date().toISOString().split('T')[0]);
   const [buyerId, setBuyerId] = useState<number | ''>('');
 
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isMasterLoading, setIsMasterLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Items State
   const [items, setItems] = useState(() => [{ id: Date.now(), item_id: '', quantity: 0, rate: 0, amount: 0 }]);
 
   useEffect(() => {
-    if (!isFormOpen) {
-      salesApi.salesReturn.list().then(res => setReturns(Array.isArray(res) ? res : (res as any).results || [])).catch(console.error);
-    }
-  }, [isFormOpen]);
+    const fetchMaster = async () => {
+      setIsMasterLoading(true);
+      Promise.all([
+        masterApi.accounts.list(),
+        masterApi.items.list()
+      ])
+      .then(([accRes, itemsRes]) => {
+        setAccounts(Array.isArray(accRes) ? accRes : (accRes as any)?.results || []);
+        setItemsList(Array.isArray(itemsRes) ? itemsRes : (itemsRes as any)?.results || []);
+      })
+      .catch(console.error)
+      .finally(() => setIsMasterLoading(false));
+    };
+    fetchMaster();
+  }, []);
 
   useEffect(() => {
-    masterApi.accounts.list().then(res => setAccounts(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
-    masterApi.items.list().then(res => setItemsList(Array.isArray(res) ? res : (res as any)?.results || [])).catch(console.error);
-  }, []);
+    if (!isFormOpen) {
+      const fetchList = async () => {
+        setIsTableLoading(true);
+        salesApi.salesReturn.list().then(res => setReturns(Array.isArray(res) ? res : (res as any).results || [])).catch(console.error).finally(() => setIsTableLoading(false));
+      };
+      fetchList();
+    }
+  }, [isFormOpen]);
 
   const handleAddItem = () => {
     setItems([...items, { id: Date.now(), item_id: '', quantity: 0, rate: 0, amount: 0 }]);
@@ -76,6 +97,7 @@ export const SalesReturnsPage: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const payload = {
         invoice_no: invoiceNo,
         invoice_date: returnDate,
@@ -107,6 +129,8 @@ export const SalesReturnsPage: React.FC = () => {
     } catch (err) {
       toast.error('Error saving return. Please check mandatory fields.');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -167,10 +191,6 @@ export const SalesReturnsPage: React.FC = () => {
             <p className="text-[11px] font-bold text-text-secondary uppercase mt-0.5 tracking-wider">Manage Returns</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
-            <div className="relative">
-              <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search Invoice..." className="pl-9 pr-4 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:border-primary" />
-            </div>
             <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                <Download className="w-4 h-4" /> Import Excel
             </button>
@@ -180,46 +200,52 @@ export const SalesReturnsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-x-auto">
-          <table className="w-full text-left text-[12px] font-bold">
-            <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-              <tr>
-                <th className="py-4 px-5 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
-                <th className="py-4 px-5">DATE</th>
-                <th className="py-4 px-5">INVOICE NO</th>
-                <th className="py-4 px-5">BUYER</th>
-                <th className="py-4 px-5">TOTAL</th>
-                <th className="py-4 px-5 text-center">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {returns.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-text-secondary font-medium">No sales returns found.</td>
-                </tr>
-              ) : returns.map((ret: any) => {
-                const buyerId = ret.buyer || ret.buyer_id || ret.party_id;
-                const partyName = accounts.find(p => p.id === buyerId)?.name || accounts.find(p => p.id === buyerId)?.account_name || 'UNKNOWN';
-                const dateStr = ret.date || ret.invoice_date ? new Date(ret.date || ret.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                return (
-                  <tr key={ret.id} className="hover:bg-input/50 transition-colors">
-                    <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-border" /></td>
-                    <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
-                    <td className="py-4 px-5 text-text-primary text-[13px]">{ret.invoice_no || '--'}</td>
-                    <td className="py-4 px-5 text-text-primary uppercase">{partyName}</td>
-                    <td className="py-4 px-5 text-text-primary">₹ {Number(ret.grand_total || 0).toLocaleString()}</td>
-                    <td className="py-4 px-5 text-center">
-                      <div className="flex justify-center items-center gap-2">
-                        <button onClick={() => handleEdit(ret.id)} className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleEdit(ret.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDelete(ret.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
+          <Table 
+            data={returns} 
+            isLoading={isTableLoading}
+            columns={[
+              {
+                key: 'invoice_date',
+                header: 'DATE',
+                render: (p: any) => p.date || p.invoice_date ? new Date(p.date || p.invoice_date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'invoice_no',
+                header: 'INVOICE NO',
+                render: (p: any) => p.invoice_no || '--'
+              },
+              {
+                key: 'party_name',
+                header: 'BUYER',
+                render: (p: any) => {
+                  const buyerId = p.buyer || p.buyer_id || p.party_id;
+                  const partyName = accounts.find(a => a.id === buyerId)?.name || accounts.find(a => a.id === buyerId)?.account_name || 'UNKNOWN';
+                  return <span className="uppercase">{partyName}</span>;
+                }
+              },
+              {
+                key: 'grand_total',
+                header: 'TOTAL',
+                render: (p: any) => `₹ ${Number(p.grand_total || 0).toLocaleString()}`
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (ret: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(ret.id)} className="text-text-muted hover:text-text-secondary p-1.5 rounded border border-border transition-colors"><Eye className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleEdit(ret.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(ret.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="Sales_Returns" 
+            searchKey="invoice_no" 
+            searchPlaceholder="Search Invoice..." 
+          />
         </div>
       </div>
     );
@@ -252,8 +278,8 @@ export const SalesReturnsPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>BUYER <span className="text-red-500">*</span></label>
-            <select value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass}>
-              <option value="">-- SELECT --</option>
+            <select disabled={isMasterLoading} value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass}>
+              <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT --'}</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.name || a.account_name}</option>)}
             </select>
           </div>
@@ -284,8 +310,8 @@ export const SalesReturnsPage: React.FC = () => {
                 <tr key={item.id} className="hover:bg-input/50 transition-colors group relative">
                   <td className="py-3 px-4 text-center text-text-muted font-bold">{idx + 1}</td>
                   <td className="py-3 px-4">
-                    <select value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className={`${inputClass} !bg-surface`}>
-                      <option value="">-- SELECT --</option>
+                    <select disabled={isMasterLoading} value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className={`${inputClass} !bg-surface`}>
+                      <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT --'}</option>
                       {itemsList.map(i => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                     </select>
                   </td>
@@ -343,10 +369,10 @@ export const SalesReturnsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4">
-           <button onClick={handleSubmit} className="flex-1 bg-primary hover:bg-primary-hover text-white py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm">
-              <Save className="w-4 h-4" /> SAVE RETURN
+           <button onClick={handleSubmit} disabled={isSubmitting} className="flex-1 bg-primary hover:bg-primary-hover text-white py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-50">
+              {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> SAVING...</> : <><Save className="w-4 h-4" /> SAVE RETURN</>}
            </button>
-           <button onClick={() => setIsFormOpen(false)} className="px-10 bg-surface border border-border hover:bg-input text-text-primary py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm">
+           <button onClick={() => setIsFormOpen(false)} disabled={isSubmitting} className="px-10 bg-surface border border-border hover:bg-input text-text-primary py-3.5 rounded-lg text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm disabled:opacity-50">
               CANCEL
            </button>
         </div>

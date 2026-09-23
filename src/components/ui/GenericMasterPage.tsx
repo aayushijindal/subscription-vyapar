@@ -100,6 +100,7 @@ export const GenericMasterPage: React.FC<GenericMasterPageProps> = ({
     {
       key: 'actions',
       header: 'Actions',
+      exportable: false,
       render: (item: any) => (
         <div className="flex items-center gap-2">
           <button onClick={() => handleOpenModal(item)} className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-light rounded transition-colors">

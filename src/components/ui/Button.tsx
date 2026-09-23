@@ -7,16 +7,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'primary', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyle = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
+    const baseStyle = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-250 focus:outline-none disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
     
     const sizes = 'px-4 py-2.5 text-sm';
     
     const variants = {
-      primary: 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white shadow-sm focus:ring-primary',
-      secondary: 'bg-surface hover:bg-surface-soft text-text-primary border border-border focus:ring-primary/20',
-      outline: 'border border-border hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-primary',
-      danger: 'bg-danger hover:bg-danger/90 text-white shadow-sm focus:ring-danger',
-      ghost: 'hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-primary/20'
+      primary: 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white shadow-sm focus:ring-1 focus:ring-primary/50',
+      secondary: 'bg-surface hover:bg-surface-soft text-text-primary border border-border focus:ring-1 focus:ring-primary/20',
+      outline: 'border border-border hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-1 focus:ring-primary/20',
+      danger: 'bg-danger hover:bg-danger/90 text-white shadow-sm focus:ring-1 focus:ring-danger/50',
+      ghost: 'hover:bg-surface-soft text-text-secondary hover:text-text-primary focus:ring-1 focus:ring-primary/20'
     };
 
     return (

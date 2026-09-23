@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, X, Save, Pencil, Trash2, FileText, Printer, FileSpreadsheet, Upload, ArrowLeft } from 'lucide-react';
+import { Plus, Search, X, Save, Pencil, Trash2, Upload, ArrowLeft, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { masterApi } from '../../services/api/master';
 import { salesApi } from '../../services/api/sales';
+import { Table } from '../../components/ui/Table';
 
 export const OrderBookingPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -17,17 +18,36 @@ export const OrderBookingPage: React.FC = () => {
   const [partyId, setPartyId] = useState<number | ''>('');
   const [vehicleNo, setVehicleNo] = useState('');
 
+  const [isTableLoading, setIsTableLoading] = useState(false);
+  const [isMasterLoading, setIsMasterLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [items, setItems] = useState(() => [{ id: Date.now(), item_id: '', pcs_kg: '0', pcs: 0, quantity: 0, rate: 0, scrap: 0, net_amount: 0 }]);
 
   useEffect(() => {
-    // Fetch dropdown data
-    masterApi.accounts.list().then(res => setParties(res)).catch(console.error);
-    masterApi.items.list().then(res => setItemsList(res)).catch(console.error);
+    const fetchMaster = async () => {
+      setIsMasterLoading(true);
+      Promise.all([
+        masterApi.accounts.list(),
+        masterApi.items.list()
+      ])
+      .then(([partiesRes, itemsRes]) => {
+        setParties(partiesRes);
+        setItemsList(itemsRes);
+      })
+      .catch(console.error)
+      .finally(() => setIsMasterLoading(false));
+    };
+    fetchMaster();
   }, []);
 
   useEffect(() => {
     if (!isFormOpen) {
-      salesApi.orderBooking.list().then(res => setOrders(Array.isArray(res) ? res : (res.results || []))).catch(console.error);
+      const fetchList = async () => {
+        setIsTableLoading(true);
+        salesApi.orderBooking.list().then(res => setOrders(Array.isArray(res) ? res : (res.results || []))).catch(console.error).finally(() => setIsTableLoading(false));
+      };
+      fetchList();
     }
   }, [isFormOpen]);
 
@@ -64,6 +84,7 @@ export const OrderBookingPage: React.FC = () => {
       return;
     }
     try {
+      setIsSubmitting(true);
       const payload = {
         date: bookingDate,
         booking_order_no: orderNo,
@@ -93,6 +114,8 @@ export const OrderBookingPage: React.FC = () => {
     } catch (err) {
       toast.error('Error saving order booking. Please check mandatory fields.');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -156,15 +179,6 @@ export const OrderBookingPage: React.FC = () => {
             <p className="text-[11px] font-bold text-text-secondary uppercase mt-0.5 tracking-wider">SALES MANAGEMENT</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
-            <button className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 p-2.5 rounded-xl transition-colors border border-emerald-100">
-              <FileSpreadsheet className="w-4 h-4" />
-            </button>
-            <button className="text-rose-500 hover:text-rose-600 bg-rose-50 p-2.5 rounded-xl transition-colors border border-rose-100">
-              <FileText className="w-4 h-4" />
-            </button>
-            <button className="text-text-secondary hover:text-text-secondary bg-input p-2.5 rounded-xl transition-colors border border-border">
-              <Printer className="w-4 h-4" />
-            </button>
             <button className="bg-background hover:bg-slate-200 text-text-primary px-4 py-2.5 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors border border-border uppercase tracking-wider">
               <Upload className="w-4 h-4" /> Import
             </button>
@@ -216,63 +230,65 @@ export const OrderBookingPage: React.FC = () => {
 
         {/* Table Section */}
         <div className="bg-surface rounded-2xl shadow-sm border border-border/60 overflow-hidden">
-          {orders.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-input rounded-full flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-[15px] font-black text-text-primary uppercase tracking-wide">No Orders Found</h3>
-              <p className="text-[13px] text-text-secondary mt-1 max-w-sm">No bookings match your current criteria. Click "Add New" to create one.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[12px] font-bold">
-                <thead className="bg-background text-text-secondary uppercase tracking-wider border-b border-border/60">
-                  <tr>
-                    <th className="py-4 px-5 w-[40px] text-center"><input type="checkbox" className="rounded border-border" /></th>
-                    <th className="py-4 px-5">DATE</th>
-                    <th className="py-4 px-5">ORDER NO.</th>
-                    <th className="py-4 px-5">PARTY</th>
-                    <th className="py-4 px-5">AMOUNT</th>
-                    <th className="py-4 px-5 text-center">STATUS</th>
-                    <th className="py-4 px-5 text-center">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {orders.map((order) => {
-                    const partyId = order.party || order.party_id;
-                    const partyName = Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId;
-                    const dateStr = order.date ? new Date(order.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-';
-                    // Pseudo status logic
-                    const isCompleted = order.status === 'COMPLETED';
-                    const listAmount = order.total_amount || (order.items || []).reduce((sum: number, i: any) => sum + (Number(i.amount) || 0), 0);
-                    return (
-                      <tr key={order.id} className="hover:bg-input/50 transition-colors">
-                        <td className="py-4 px-5 text-center"><input type="checkbox" className="rounded border-border" /></td>
-                        <td className="py-4 px-5 text-text-secondary">{dateStr}</td>
-                        <td className="py-4 px-5 text-text-primary">{order.booking_order_no || order.order_no || '--'}</td>
-                        <td className="py-4 px-5 text-text-primary uppercase">{partyName || '--'}</td>
-                        <td className="py-4 px-5 text-text-secondary font-bold">₹ {Number(listAmount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
-                        <td className="py-4 px-5 text-center">
-                          {isCompleted ? (
-                            <span className="px-2.5 py-1 text-[10px] border border-emerald-500 text-emerald-600 rounded bg-emerald-50 font-black uppercase tracking-wider">COMPLETED</span>
-                          ) : (
-                            <span className="px-2.5 py-1 text-[10px] border border-primary/50 text-primary rounded bg-primary-light font-black uppercase tracking-wider">PENDING</span>
-                          )}
-                        </td>
-                        <td className="py-4 px-5 text-center">
-                          <div className="flex justify-center items-center gap-2">
-                            <button onClick={() => handleEdit(order.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                            <button onClick={() => handleDelete(order.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <Table 
+            data={orders} 
+            isLoading={isTableLoading}
+            columns={[
+              {
+                key: 'date',
+                header: 'DATE',
+                render: (order: any) => order.date ? new Date(order.date).toLocaleDateString('en-GB').replace(/\//g, '-') : '-'
+              },
+              {
+                key: 'booking_order_no',
+                header: 'ORDER NO.',
+                render: (order: any) => order.booking_order_no || order.order_no || '--'
+              },
+              {
+                key: 'party_name',
+                header: 'PARTY',
+                render: (order: any) => {
+                  const partyId = order.party || order.party_id;
+                  const partyName = Array.isArray(parties) ? (parties.find(p => p.id === partyId)?.name || parties.find(p => p.id === partyId)?.account_name || partyId) : partyId;
+                  return <span className="uppercase">{partyName || '--'}</span>;
+                }
+              },
+              {
+                key: 'amount',
+                header: 'AMOUNT',
+                render: (order: any) => {
+                  const listAmount = order.total_amount || (order.items || []).reduce((sum: number, i: any) => sum + (Number(i.amount) || 0), 0);
+                  return <span className="font-bold">₹ {Number(listAmount).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>;
+                }
+              },
+              {
+                key: 'status',
+                header: 'STATUS',
+                render: (order: any) => {
+                  const isCompleted = order.status === 'COMPLETED';
+                  return isCompleted ? (
+                    <span className="px-2.5 py-1 text-[10px] border border-emerald-500 text-emerald-600 rounded bg-emerald-50 font-black uppercase tracking-wider">COMPLETED</span>
+                  ) : (
+                    <span className="px-2.5 py-1 text-[10px] border border-primary/50 text-primary rounded bg-primary-light font-black uppercase tracking-wider">PENDING</span>
+                  );
+                }
+              },
+              {
+                key: 'actions',
+                header: 'ACTIONS',
+                exportable: false,
+                render: (order: any) => (
+                  <div className="flex justify-center items-center gap-2">
+                    <button onClick={() => handleEdit(order.id)} className="text-primary hover:text-primary bg-primary-light p-1.5 rounded border border-primary/20 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(order.id)} className="text-red-500 hover:text-red-600 bg-red-50 p-1.5 rounded border border-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )
+              }
+            ]}
+            exportFilename="Book_Order_List"
+            searchKey="booking_order_no"
+            searchPlaceholder="SEARCH ORDER NO..."
+          />
         </div>
       </div>
     );
@@ -307,8 +323,8 @@ export const OrderBookingPage: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">PARTY / SUPPLIER <span className="text-red-500">*</span></label>
-            <select value={partyId} onChange={(e) => setPartyId(Number(e.target.value))} className="w-full bg-surface border border-border focus:border-primary rounded-lg p-2.5 text-[13px] text-text-primary transition-all outline-none">
-              <option value="">-- SELECT PARTY --</option>
+            <select disabled={isMasterLoading} value={partyId} onChange={(e) => setPartyId(Number(e.target.value))} className="w-full bg-surface border border-border focus:border-primary rounded-lg p-2.5 text-[13px] text-text-primary transition-all outline-none">
+              <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT PARTY --'}</option>
               {(Array.isArray(parties) ? parties : parties?.results || []).map((p: any) => <option key={p.id} value={p.id}>{p.name || p.account_name}</option>)}
             </select>
           </div>
@@ -346,8 +362,8 @@ export const OrderBookingPage: React.FC = () => {
               {items.map((item) => (
                 <tr key={item.id} className="hover:bg-input transition-colors">
                   <td className="py-3 px-4">
-                    <select value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className="w-full bg-surface border border-border rounded p-2 text-[13px] text-text-secondary outline-none focus:border-primary">
-                      <option value="">-- ITEM --</option>
+                    <select disabled={isMasterLoading} value={item.item_id} onChange={(e) => handleItemChange(item.id, 'item_id', e.target.value)} className="w-full bg-surface border border-border rounded p-2 text-[13px] text-text-secondary outline-none focus:border-primary">
+                      <option value="">{isMasterLoading ? 'Loading...' : '-- ITEM --'}</option>
                       {(Array.isArray(itemsList) ? itemsList : itemsList?.results || []).map((i: any) => <option key={i.id} value={i.id}>{i.item_name || i.name}</option>)}
                     </select>
                   </td>
@@ -382,10 +398,10 @@ export const OrderBookingPage: React.FC = () => {
 
         {/* Form Actions */}
         <div className="flex items-center justify-center gap-4">
-          <button onClick={handleSubmit} className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-xl text-[13px] font-black uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm">
-            <Save className="w-4 h-4" /> SUBMIT ORDER
+          <button onClick={handleSubmit} disabled={isSubmitting} className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-xl text-[13px] font-black uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm disabled:opacity-50">
+            {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> SAVING...</> : <><Save className="w-4 h-4" /> SUBMIT ORDER</>}
           </button>
-          <button onClick={() => setIsFormOpen(false)} className="bg-background hover:bg-slate-200 text-text-primary px-8 py-3 rounded-xl text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm">
+          <button onClick={() => setIsFormOpen(false)} disabled={isSubmitting} className="bg-background hover:bg-slate-200 text-text-primary px-8 py-3 rounded-xl text-[13px] font-black uppercase tracking-wider transition-colors shadow-sm disabled:opacity-50">
             CANCEL
           </button>
         </div>
