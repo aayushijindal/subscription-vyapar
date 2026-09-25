@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { salesApi } from '../../services/api/sales';
 import { masterApi } from '../../services/api/master';
 import { Table } from '../../components/ui/Table';
+import { BookingModal } from './BookingModal';
 
 export const SalesPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -15,6 +16,7 @@ export const SalesPage: React.FC = () => {
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMasterLoading, setIsMasterLoading] = useState(true);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Form State
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -101,6 +103,29 @@ export const SalesPage: React.FC = () => {
     }
   };
 
+  const handleBookingSubmit = (selectedBookings: any[]) => {
+    const newItems = selectedBookings.map(sb => ({
+       id: Date.now() + Math.random(),
+       item_id: sb.item_id,
+       order_booking_item_id: sb.id,
+       nos: sb.sell_pcs,
+       quantity: sb.sell_qty,
+       rate: sb.rate,
+       amount: (Number(sb.sell_qty) * Number(sb.rate)) || 0
+    }));
+    
+    // Check if the current list is just one empty dummy row. If so, overwrite it.
+    const hasOnlyEmpty = items.length === 1 && !items[0].item_id && items[0].quantity === 0;
+    
+    if (hasOnlyEmpty) {
+       setItems(newItems);
+    } else {
+       setItems([...items, ...newItems]);
+    }
+    
+    setIsBookingModalOpen(false);
+  };
+
   const handleItemChange = (id: number, field: string, value: any) => {
     setItems(items.map(item => {
       if (item.id === id) {
@@ -172,6 +197,7 @@ export const SalesPage: React.FC = () => {
         discount_amount: Number(discountAmt.toFixed(2)),
         items: items.map((item: any) => ({
           item: item.item_id,
+          order_booking_item: item.order_booking_item_id || null,
           nos: item.nos,
           quantity: item.quantity,
           rate: item.rate,
@@ -457,7 +483,22 @@ export const SalesPage: React.FC = () => {
             <input type="text" placeholder="PIN NO." value={pincode} onChange={e => setPincode(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>BUYER <span className="text-red-500">*</span></label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">BUYER <span className="text-red-500">*</span></label>
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (!buyerId) {
+                    toast.error('Please select a Buyer first to view their bookings.');
+                    return;
+                  }
+                  setIsBookingModalOpen(true);
+                }} 
+                className="text-[10px] text-primary font-black uppercase tracking-wider hover:underline bg-primary-light px-2 py-0.5 rounded border border-primary/20 transition-all"
+              >
+                VIEW BOOKING
+              </button>
+            </div>
             <select disabled={isMasterLoading} value={buyerId} onChange={e => setBuyerId(Number(e.target.value))} className={inputClass} required>
               <option value="">{isMasterLoading ? 'Loading...' : '-- SELECT BUYER --'}</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.name || a.account_name}</option>)}
@@ -654,6 +695,14 @@ export const SalesPage: React.FC = () => {
         </div>
 
       </div>
+      
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)} 
+        buyerId={buyerId} 
+        itemsList={itemsList} 
+        onSubmit={handleBookingSubmit} 
+      />
     </div>
   );
 };
